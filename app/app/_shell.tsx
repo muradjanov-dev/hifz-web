@@ -8,9 +8,9 @@ import { cn } from "@/lib/cn";
 
 const TABS = [
   { href: "/app",              label: "Bosh",      icon: HomeIcon },
-  { href: "/app/profile",      label: "Profile",   icon: UserIcon },
+  { href: "/app/memorize",     label: "Yodlash",   icon: BookIcon },
   { href: "/app/leaderboard",  label: "Reyting",   icon: TrophyIcon },
-  { href: "/app/achievements", label: "Yutuqlar",  icon: StarIcon },
+  { href: "/app/profile",      label: "Profile",   icon: UserIcon },
 ];
 
 export function MiniAppShell({ children }: { children: React.ReactNode }) {
@@ -83,10 +83,10 @@ function TrophyIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-function StarIcon({ className }: { className?: string }) {
+function BookIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+      <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
     </svg>
   );
 }
