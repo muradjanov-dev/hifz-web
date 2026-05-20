@@ -254,15 +254,15 @@ function ActiveSession({ session, onChange }: { session: Session; onChange: () =
           </div>
 
           {/* Madani Mushaf image — supplementary, white bg forced so dark text is visible */}
-          <details className="mb-3 rounded-2xl border border-zinc-200/80 bg-white p-3 dark:border-zinc-800/80 dark:bg-zinc-900">
-            <summary className="cursor-pointer text-xs font-medium text-zinc-600 dark:text-zinc-400">
+          <details className="mb-3 overflow-hidden rounded-2xl border border-zinc-200/80 bg-white dark:border-zinc-800/80 dark:bg-zinc-900">
+            <summary className="cursor-pointer px-4 py-3 text-xs font-medium text-zinc-600 dark:text-zinc-400">
               📖 Mushaf rasmida ko&apos;rish
             </summary>
-            <div className="mt-3 rounded-xl bg-white p-3">
+            <div className="bg-white p-2">
               <img
                 src={ayah.image_url}
                 alt={`${session.surah_name} ${currentAyahNum}-oyat`}
-                className="mx-auto max-h-64 w-auto object-contain"
+                className="block w-full h-auto"
               />
             </div>
           </details>
