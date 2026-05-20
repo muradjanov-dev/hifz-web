@@ -159,6 +159,7 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
   const [error,     setError]       = useState<string | null>(null);
   const [surahDone, setSurahDone]   = useState(false);
   const [surahDoneName, setSurahDoneName] = useState("");
+  const [limitInfo, setLimitInfo]   = useState<{ limit: number; used: number } | null>(null);
 
   async function advance() {
     setAdvancing(true);
@@ -168,6 +169,11 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
         method: "POST",
         headers: { "X-Telegram-Init-Data": getInitData() },
       });
+      if (res.status === 402) {
+        const j = await res.json().catch(() => ({}));
+        setLimitInfo({ limit: j.limit ?? 5, used: j.used_today ?? 5 });
+        return;
+      }
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
         throw new Error(j.error || `HTTP ${res.status}`);
@@ -200,6 +206,7 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
   }
 
   if (surahDone) return <SurahCompleteCard surahName={surahDoneName} onDone={onChange} />;
+  if (limitInfo) return <LimitReachedCard {...limitInfo} onClose={() => setLimitInfo(null)} />;
 
   const buttonLabel = (() => {
     if (stage === "repeat_pair") return `✅ Juftlikni ${target} marta o'qidim`;
@@ -345,6 +352,37 @@ function AyahCard({ ayah, singleStage }: { ayah: AyahPayload; singleStage: boole
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
+
+function LimitReachedCard({ limit, used, onClose }: { limit: number; used: number; onClose: () => void }) {
+  return (
+    <div className="mt-8 rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50 to-white p-6 text-center dark:border-amber-900/40 dark:from-amber-950/30 dark:to-zinc-900">
+      <div className="mb-3 text-5xl">💎</div>
+      <h2 className="text-xl font-semibold">Bugungi limit tugadi</h2>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+        Bepul foydalanuvchilar kuniga <b>{limit}</b> ta yangi oyatni yodlash mumkin.
+        Siz bugun {used} tasini o&apos;qib chiqdingiz — Alhamdulillah!
+      </p>
+      <div className="mt-6 space-y-2">
+        <a
+          href="/app/premium"
+          className="flex h-12 items-center justify-center rounded-full bg-emerald-600 text-sm font-medium text-white shadow-lg shadow-emerald-600/20"
+        >
+          💎 Premium olish — cheksiz yodlash
+        </a>
+        <button
+          onClick={onClose}
+          className="block w-full text-xs text-zinc-500 underline-offset-2 hover:underline dark:text-zinc-400"
+        >
+          Ertaga davom etish
+        </button>
+      </div>
+      <p className="mt-6 rounded-lg bg-zinc-100/80 p-3 text-[11px] text-zinc-600 dark:bg-zinc-800/60 dark:text-zinc-400">
+        💡 Premium foydalanuvchilar: cheksiz oyat, 5 qori, audio yuklab olish,
+        batafsil grafiklar va <b>2x himmat</b>.
+      </p>
+    </div>
+  );
+}
 
 function SurahCompleteCard({ surahName, onDone }: { surahName: string; onDone: () => void }) {
   return (

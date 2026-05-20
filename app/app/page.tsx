@@ -24,8 +24,16 @@ type Profile = {
   completed_juz?: number[];
 };
 
+type Quota = {
+  is_premium: boolean;
+  used_today: number;
+  limit: number | null;
+  remaining: number | null;
+};
+
 export default function Dashboard() {
   const { data, error, isLoading } = useApi<Profile>("/api/me");
+  const { data: quota } = useApi<Quota>("/api/me/quota");
 
   if (isLoading) return <Loading />;
   if (error)     return <ErrorBlock message={(error as Error).message} />;
@@ -73,6 +81,34 @@ export default function Dashboard() {
         <StatCard label="Tugatilgan sura"  value={`${surahsDone}/114`}              sub="" />
         <StatCard label="Tugatilgan juz"   value={`${juzDone}/30`}                  sub="" />
       </section>
+
+      {/* Daily quota (only for free users) */}
+      {quota && !quota.is_premium && (
+        <section className="mb-5 rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50 to-white p-4 dark:border-amber-900/40 dark:from-amber-950/30 dark:to-zinc-900">
+          <div className="flex items-baseline justify-between">
+            <p className="text-xs uppercase tracking-wide text-amber-700 dark:text-amber-400">
+              Bugungi limit
+            </p>
+            <p className="text-sm font-semibold">
+              {quota.used_today} / {quota.limit ?? 5}
+            </p>
+          </div>
+          <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-amber-200/40 dark:bg-amber-900/40">
+            <div
+              className="h-full rounded-full bg-amber-500 transition-all"
+              style={{
+                width: `${Math.min(100, ((quota.used_today || 0) / (quota.limit || 5)) * 100)}%`,
+              }}
+            />
+          </div>
+          <a
+            href="/app/premium"
+            className="mt-3 block text-center text-xs font-medium text-amber-700 underline-offset-2 hover:underline dark:text-amber-400"
+          >
+            Cheksiz yodlash → Premium olish 💎
+          </a>
+        </section>
+      )}
 
       {/* Quran progress bar */}
       <section className="mb-5 rounded-2xl border border-zinc-200/80 bg-white p-5 dark:border-zinc-800/80 dark:bg-zinc-900">
