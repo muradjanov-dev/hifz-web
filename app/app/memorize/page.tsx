@@ -233,14 +233,39 @@ function ActiveSession({ session, onChange }: { session: Session; onChange: () =
         </div>
       ) : (
         <>
-          {/* Ayah image */}
-          <div className="mb-3 overflow-hidden rounded-2xl border border-zinc-200/80 bg-white p-4 dark:border-zinc-800/80 dark:bg-zinc-900">
-            <img
-              src={ayah.image_url}
-              alt={`${session.surah_name} ${currentAyahNum}-oyat`}
-              className="mx-auto max-h-72 w-auto object-contain"
-            />
+          {/* Big Arabic text — PRIMARY display */}
+          <div className="mb-3 rounded-2xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50 to-white p-6 shadow-sm dark:border-emerald-900/40 dark:from-emerald-950/30 dark:to-zinc-900">
+            <p
+              dir="rtl"
+              lang="ar"
+              className="text-center"
+              style={{
+                fontSize: "2.25rem",
+                lineHeight: "2.4",
+                fontFamily:
+                  'var(--font-amiri), "Amiri Quran", "Amiri", "Scheherazade New", "Traditional Arabic", "Arabic Typesetting", serif',
+              }}
+            >
+              {ayah.arabic}
+            </p>
+            <p className="mt-3 text-center text-[11px] text-emerald-700/70 dark:text-emerald-300/70">
+              {session.surah_name} · {currentAyahNum}-oyat
+            </p>
           </div>
+
+          {/* Madani Mushaf image — supplementary, white bg forced so dark text is visible */}
+          <details className="mb-3 rounded-2xl border border-zinc-200/80 bg-white p-3 dark:border-zinc-800/80 dark:bg-zinc-900">
+            <summary className="cursor-pointer text-xs font-medium text-zinc-600 dark:text-zinc-400">
+              📖 Mushaf rasmida ko&apos;rish
+            </summary>
+            <div className="mt-3 rounded-xl bg-white p-3">
+              <img
+                src={ayah.image_url}
+                alt={`${session.surah_name} ${currentAyahNum}-oyat`}
+                className="mx-auto max-h-64 w-auto object-contain"
+              />
+            </div>
+          </details>
 
           {/* Audio player */}
           <div className="mb-3 rounded-2xl border border-zinc-200/80 bg-white p-3 dark:border-zinc-800/80 dark:bg-zinc-900">
