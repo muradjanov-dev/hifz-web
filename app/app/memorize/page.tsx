@@ -6,6 +6,16 @@ import { getInitData } from "@/lib/telegram-client";
 import { cn } from "@/lib/cn";
 
 type Surah = { number: number; name: string; ayah_count: number; juz?: number[] };
+
+type AyahPayload = {
+  surah: number;
+  ayah: number;
+  arabic: string;
+  uzbek: string;
+  audio_url: string;
+  image_url: string;
+};
+
 type Session = {
   session_id: string;
   surah_number: number;
@@ -15,29 +25,32 @@ type Session = {
   reciter: string;
   session_ayahs_count: number;
 };
-type Ayah = {
-  surah: number;
-  ayah: number;
-  arabic: string;
-  uzbek: string;
-  audio_url: string;
-  image_url: string;
+
+type StagePayload = {
+  session: Session | null;
+  stage?: "ayah" | "repeat_pair" | "accumulate";
+  stage_label?: string;
+  target_reps?: number;
+  ayahs?: AyahPayload[];
+  progress?: {
+    session_ayahs_count: number;
+    current_ayah_in_surah: number;
+    total_ayahs_in_surah: number;
+  };
 };
 
 export default function MemorizePage() {
-  const { data: sessionData, mutate: refetchSession, isLoading } =
-    useApi<{ session: Session | null }>("/api/me/session");
-
-  const session = sessionData?.session;
+  const { data, error, mutate, isLoading } = useApi<StagePayload>("/api/me/session");
 
   if (isLoading) return <Skeleton />;
+  if (error)     return <ErrorBlock message={(error as Error).message} />;
 
   return (
     <div className="mx-auto max-w-md px-4 py-6">
-      {session ? (
-        <ActiveSession session={session} onChange={() => refetchSession()} />
+      {data?.session ? (
+        <ActiveSession state={data} onChange={() => mutate()} />
       ) : (
-        <SurahPicker onStarted={() => refetchSession()} />
+        <SurahPicker onStarted={() => mutate()} />
       )}
     </div>
   );
@@ -80,7 +93,8 @@ function SurahPicker({ onStarted }: { onStarted: () => void }) {
       <header className="mb-5">
         <h1 className="text-xl font-semibold">📗 Yodlash</h1>
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Surani tanlang va yodlashni boshlang
+          Surani tanlang. Har oyat uzunligiga qarab 5-11 marta takrorlanadi,
+          har 2 oyatda juftlik, har 5 oyatda jamlash.
         </p>
       </header>
 
@@ -111,12 +125,8 @@ function SurahPicker({ onStarted }: { onStarted: () => void }) {
             )}
           >
             <div>
-              <p className="text-sm font-medium">
-                {s.number}. {s.name}
-              </p>
-              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
-                {s.ayah_count} oyat
-              </p>
+              <p className="text-sm font-medium">{s.number}. {s.name}</p>
+              <p className="text-[11px] text-zinc-500 dark:text-zinc-400">{s.ayah_count} oyat</p>
             </div>
             {starting === s.number ? (
               <span className="text-xs text-emerald-600">Boshlanmoqda...</span>
@@ -133,28 +143,22 @@ function SurahPicker({ onStarted }: { onStarted: () => void }) {
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Active Session
+// Active Session — stage-aware
 // ──────────────────────────────────────────────────────────────────────────────
 
-function ActiveSession({ session, onChange }: { session: Session; onChange: () => void }) {
-  const currentAyahNum = (session.start_ayah || 1) + (session.current_ayah_index || 0);
-  const { data: ayah, isLoading } = useApi<Ayah>(
-    `/api/ayah?surah=${session.surah_number}&ayah=${currentAyahNum}&reciter=${session.reciter}`
-  );
+function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () => void }) {
+  const session     = state.session!;
+  const stage       = state.stage ?? "ayah";
+  const stageLabel  = state.stage_label ?? "Yodlash";
+  const target      = state.target_reps ?? 0;
+  const ayahs       = state.ayahs ?? [];
+  const progress    = state.progress;
 
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [advancing, setAdvancing] = useState(false);
-  const [exiting, setExiting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [surahDone, setSurahDone] = useState(false);
-
-  // Auto-play audio when ayah loads.
-  useEffect(() => {
-    if (ayah?.audio_url && audioRef.current) {
-      audioRef.current.src = ayah.audio_url;
-      audioRef.current.load();
-    }
-  }, [ayah?.audio_url]);
+  const [advancing, setAdvancing]   = useState(false);
+  const [exiting,   setExiting]     = useState(false);
+  const [error,     setError]       = useState<string | null>(null);
+  const [surahDone, setSurahDone]   = useState(false);
+  const [surahDoneName, setSurahDoneName] = useState("");
 
   async function advance() {
     setAdvancing(true);
@@ -170,6 +174,7 @@ function ActiveSession({ session, onChange }: { session: Session; onChange: () =
       }
       const j = await res.json();
       if (j.surah_complete) {
+        setSurahDoneName(session.surah_name);
         setSurahDone(true);
       } else {
         onChange();
@@ -194,31 +199,45 @@ function ActiveSession({ session, onChange }: { session: Session; onChange: () =
     }
   }
 
-  if (surahDone) {
-    return <SurahCompleteCard surahName={session.surah_name} onDone={onChange} />;
-  }
+  if (surahDone) return <SurahCompleteCard surahName={surahDoneName} onDone={onChange} />;
+
+  const buttonLabel = (() => {
+    if (stage === "repeat_pair") return `✅ Juftlikni ${target} marta o'qidim`;
+    if (stage === "accumulate")  return `✅ Hammasini ${target} marta o'qidim`;
+    return `✅ ${target} marta o'qidim`;
+  })();
 
   return (
     <>
-      <header className="mb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-lg font-semibold">
-              {session.surah_name}
-            </h1>
+      <header className="mb-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-lg font-semibold truncate">{session.surah_name}</h1>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              {currentAyahNum}-oyat · {session.session_ayahs_count} ta o&apos;qildi
+              {progress?.current_ayah_in_surah ?? "?"} / {progress?.total_ayahs_in_surah ?? "?"} oyat
+              {" · "}
+              {progress?.session_ayahs_count ?? 0} ta o&apos;qildi
             </p>
           </div>
           <button
             onClick={exit}
             disabled={exiting}
-            className="text-xs text-zinc-500 underline-offset-2 hover:underline dark:text-zinc-400"
+            className="shrink-0 text-xs text-zinc-500 underline-offset-2 hover:underline dark:text-zinc-400"
           >
             {exiting ? "..." : "Chiqish"}
           </button>
         </div>
       </header>
+
+      {/* Stage badge */}
+      <div className="mb-3 flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs dark:bg-emerald-950/40">
+        <span className="inline-block size-1.5 rounded-full bg-emerald-500" />
+        <span className="font-medium text-emerald-700 dark:text-emerald-300">{stageLabel}</span>
+        <span className="text-emerald-600/70 dark:text-emerald-400/70">·</span>
+        <span className="text-emerald-700 dark:text-emerald-300">
+          {target} marta takror
+        </span>
+      </div>
 
       {error && (
         <div className="mb-3 rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
@@ -226,90 +245,105 @@ function ActiveSession({ session, onChange }: { session: Session; onChange: () =
         </div>
       )}
 
-      {isLoading || !ayah ? (
-        <div className="space-y-3">
-          <div className="h-48 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
-          <div className="h-20 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
-        </div>
-      ) : (
-        <>
-          {/* Big Arabic text — PRIMARY display */}
-          <div className="mb-3 rounded-2xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50 to-white p-6 shadow-sm dark:border-emerald-900/40 dark:from-emerald-950/30 dark:to-zinc-900">
-            <p
-              dir="rtl"
-              lang="ar"
-              className="text-center"
-              style={{
-                fontSize: "2.25rem",
-                lineHeight: "2.4",
-                fontFamily:
-                  'var(--font-amiri), "Amiri Quran", "Amiri", "Scheherazade New", "Traditional Arabic", "Arabic Typesetting", serif',
-              }}
-            >
-              {ayah.arabic}
-            </p>
-            <p className="mt-3 text-center text-[11px] text-emerald-700/70 dark:text-emerald-300/70">
-              {session.surah_name} · {currentAyahNum}-oyat
-            </p>
-          </div>
+      {/* Ayahs list */}
+      <div className="space-y-3 mb-4">
+        {ayahs.map((a) => (
+          <AyahCard key={`${a.surah}_${a.ayah}`} ayah={a} singleStage={stage === "ayah"} />
+        ))}
+      </div>
 
-          {/* Madani Mushaf image — supplementary, white bg forced so dark text is visible */}
-          <details className="mb-3 overflow-hidden rounded-2xl border border-zinc-200/80 bg-white dark:border-zinc-800/80 dark:bg-zinc-900">
-            <summary className="cursor-pointer px-4 py-3 text-xs font-medium text-zinc-600 dark:text-zinc-400">
-              📖 Mushaf rasmida ko&apos;rish
-            </summary>
-            <div className="bg-white p-2">
-              <img
-                src={ayah.image_url}
-                alt={`${session.surah_name} ${currentAyahNum}-oyat`}
-                className="block w-full h-auto"
-              />
-            </div>
-          </details>
+      {/* Action button */}
+      <button
+        onClick={advance}
+        disabled={advancing}
+        className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 text-base font-medium text-white shadow-lg shadow-emerald-600/20 transition active:scale-[0.98] disabled:opacity-50"
+      >
+        {advancing ? "Saqlanmoqda..." : buttonLabel}
+      </button>
 
-          {/* Audio player */}
-          <div className="mb-3 rounded-2xl border border-zinc-200/80 bg-white p-3 dark:border-zinc-800/80 dark:bg-zinc-900">
-            <audio
-              ref={audioRef}
-              controls
-              src={ayah.audio_url}
-              className="w-full"
-              preload="auto"
-            >
-              Brauzeringiz audio'ni qo&apos;llamaydi.
-            </audio>
-          </div>
-
-          {/* Uzbek translation */}
-          {ayah.uzbek && (
-            <div className="mb-4 rounded-2xl border border-zinc-200/80 bg-zinc-50/80 p-4 dark:border-zinc-800/80 dark:bg-zinc-900/50">
-              <p className="text-[11px] uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                Tarjima
-              </p>
-              <p className="mt-1 text-sm leading-relaxed">{ayah.uzbek}</p>
-            </div>
-          )}
-
-          {/* Action button */}
-          <button
-            onClick={advance}
-            disabled={advancing}
-            className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 text-base font-medium text-white shadow-lg shadow-emerald-600/20 transition active:scale-[0.98] disabled:opacity-50"
-          >
-            {advancing ? "Saqlanmoqda..." : "✅ O'qidim, keyingisi"}
-          </button>
-
-          <p className="mt-3 text-center text-[11px] text-zinc-500 dark:text-zinc-400">
-            Har bir &quot;O&apos;qidim&quot; +5 Himmat ball beradi.
-          </p>
-        </>
-      )}
+      <p className="mt-3 text-center text-[11px] text-zinc-500 dark:text-zinc-400">
+        {stage === "ayah" && "Oyat uzunligiga qarab takrorlar soni."}
+        {stage === "repeat_pair" && "2 ta oyatni birga 5 marta o'qing."}
+        {stage === "accumulate" && "Oxirgi 5 ta oyatni birga takrorlang."}
+      </p>
     </>
   );
 }
 
 // ──────────────────────────────────────────────────────────────────────────────
-// Surah Complete
+// Single Ayah Card (Arabic, audio, translation, optional image)
+// ──────────────────────────────────────────────────────────────────────────────
+
+function AyahCard({ ayah, singleStage }: { ayah: AyahPayload; singleStage: boolean }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  useEffect(() => {
+    if (ayah.audio_url && audioRef.current) {
+      audioRef.current.src = ayah.audio_url;
+      audioRef.current.load();
+    }
+  }, [ayah.audio_url]);
+
+  return (
+    <div className="overflow-hidden rounded-2xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50 to-white shadow-sm dark:border-emerald-900/40 dark:from-emerald-950/30 dark:to-zinc-900">
+      {/* Arabic */}
+      <div className="px-5 pt-5 pb-3">
+        <p
+          dir="rtl"
+          lang="ar"
+          className="text-center"
+          style={{
+            fontSize: singleStage ? "2.25rem" : "1.5rem",
+            lineHeight: "2.3",
+            fontFamily:
+              'var(--font-amiri), "Amiri Quran", "Amiri", "Scheherazade New", "Traditional Arabic", serif',
+          }}
+        >
+          {ayah.arabic}
+        </p>
+        <p className="mt-2 text-center text-[11px] text-emerald-700/70 dark:text-emerald-300/70">
+          {ayah.surah}:{ayah.ayah}
+        </p>
+      </div>
+
+      {/* Audio */}
+      {ayah.audio_url && (
+        <div className="border-t border-emerald-200/40 bg-white/40 px-3 py-2 dark:border-emerald-900/30 dark:bg-zinc-900/40">
+          <audio ref={audioRef} controls src={ayah.audio_url} className="w-full" preload="metadata">
+            Brauzeringiz audio&apos;ni qo&apos;llamaydi.
+          </audio>
+        </div>
+      )}
+
+      {/* Uzbek (only for single ayah; in pair/accumulate keep it compact) */}
+      {singleStage && ayah.uzbek && (
+        <div className="border-t border-emerald-200/40 bg-zinc-50/60 px-5 py-3 dark:border-emerald-900/30 dark:bg-zinc-900/60">
+          <p className="text-[10px] uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+            Tarjima
+          </p>
+          <p className="mt-1 text-sm leading-relaxed">{ayah.uzbek}</p>
+        </div>
+      )}
+
+      {/* Mushaf image (single-stage only) */}
+      {singleStage && (
+        <details className="border-t border-emerald-200/40 dark:border-emerald-900/30">
+          <summary className="cursor-pointer px-4 py-2 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+            📖 Mushaf rasmida ko&apos;rish
+          </summary>
+          <div className="bg-white p-2">
+            <img
+              src={ayah.image_url}
+              alt={`${ayah.surah}:${ayah.ayah}`}
+              className="block w-full h-auto"
+            />
+          </div>
+        </details>
+      )}
+    </div>
+  );
+}
+
 // ──────────────────────────────────────────────────────────────────────────────
 
 function SurahCompleteCard({ surahName, onDone }: { surahName: string; onDone: () => void }) {
@@ -336,6 +370,16 @@ function Skeleton() {
       <div className="h-6 w-32 animate-pulse rounded bg-zinc-200 dark:bg-zinc-800" />
       <div className="h-48 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
       <div className="h-14 animate-pulse rounded-2xl bg-zinc-200 dark:bg-zinc-800" />
+    </div>
+  );
+}
+
+function ErrorBlock({ message }: { message: string }) {
+  return (
+    <div className="mx-auto max-w-md px-4 py-12 text-center">
+      <div className="mb-3 text-4xl">⚠️</div>
+      <h2 className="text-lg font-semibold">Xatolik yuz berdi</h2>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{message}</p>
     </div>
   );
 }
