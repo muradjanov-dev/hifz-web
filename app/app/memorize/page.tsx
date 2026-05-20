@@ -60,10 +60,34 @@ export default function MemorizePage() {
 // Surah Picker
 // ──────────────────────────────────────────────────────────────────────────────
 
+const RECITERS = [
+  { id: "husary",   name: "Husary (Muallim)", premium: false },
+  { id: "afasy",    name: "Mishary Al-Afasy", premium: true  },
+  { id: "ghamdi",   name: "Sa'd Al-Ghamdi",   premium: true  },
+  { id: "sudais",   name: "As-Sudais",        premium: true  },
+  { id: "minshawi", name: "Minshawi",          premium: true  },
+] as const;
+
 function SurahPicker({ onStarted }: { onStarted: () => void }) {
   const { data, isLoading } = useApi<{ surahs: Surah[] }>("/api/surahs");
+  const { data: quota } = useApi<{ is_premium: boolean }>("/api/me/quota");
   const [starting, setStarting] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [reciter, setReciter] = useState<string>("husary");
+
+  // Restore last-used reciter from localStorage.
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("hifz_reciter") : null;
+    if (saved && RECITERS.some((r) => r.id === saved)) setReciter(saved);
+  }, []);
+
+  function pickReciter(id: string) {
+    const cfg = RECITERS.find((r) => r.id === id);
+    if (!cfg) return;
+    if (cfg.premium && !quota?.is_premium) return; // locked
+    setReciter(id);
+    if (typeof window !== "undefined") localStorage.setItem("hifz_reciter", id);
+  }
 
   async function startSession(surahNumber: number) {
     setStarting(surahNumber);
@@ -75,7 +99,7 @@ function SurahPicker({ onStarted }: { onStarted: () => void }) {
           "Content-Type": "application/json",
           "X-Telegram-Init-Data": getInitData(),
         },
-        body: JSON.stringify({ surah: surahNumber, direction: "forward", reciter: "husary" }),
+        body: JSON.stringify({ surah: surahNumber, direction: "forward", reciter }),
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
@@ -93,10 +117,44 @@ function SurahPicker({ onStarted }: { onStarted: () => void }) {
       <header className="mb-5">
         <h1 className="text-xl font-semibold">📗 Yodlash</h1>
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
-          Surani tanlang. Har oyat uzunligiga qarab 5-11 marta takrorlanadi,
-          har 2 oyatda juftlik, har 5 oyatda jamlash.
+          Qori va surani tanlang. Har oyat uzunligiga qarab 5-11 marta takrorlanadi.
         </p>
       </header>
+
+      {/* Reciter picker */}
+      <section className="mb-5">
+        <h2 className="mb-2 px-1 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+          Qori (audio)
+        </h2>
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {RECITERS.map((r) => {
+            const isSelected = reciter === r.id;
+            const isLocked = r.premium && !quota?.is_premium;
+            return (
+              <button
+                key={r.id}
+                onClick={() => pickReciter(r.id)}
+                disabled={isLocked}
+                className={cn(
+                  "shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition",
+                  isSelected
+                    ? "border-emerald-600 bg-emerald-600 text-white"
+                    : isLocked
+                    ? "border-zinc-200 bg-zinc-100 text-zinc-400 opacity-60 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-500"
+                    : "border-zinc-200/80 bg-white text-zinc-700 hover:border-emerald-400 hover:text-emerald-700 dark:border-zinc-800/80 dark:bg-zinc-900 dark:text-zinc-300 dark:hover:text-emerald-400"
+                )}
+              >
+                {isLocked ? "💎 " : ""}{r.name}
+              </button>
+            );
+          })}
+        </div>
+        {!quota?.is_premium && (
+          <p className="mt-2 px-1 text-[11px] text-zinc-500 dark:text-zinc-400">
+            💎 belgili qorilar Premium — <a href="/app/premium" className="text-emerald-600 underline-offset-2 hover:underline dark:text-emerald-400">olish</a>
+          </p>
+        )}
+      </section>
 
       {error && (
         <div className="mb-3 rounded-xl bg-red-50 p-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
@@ -112,6 +170,9 @@ function SurahPicker({ onStarted }: { onStarted: () => void }) {
         </div>
       )}
 
+      <h2 className="mb-2 px-1 text-xs font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+        Sura
+      </h2>
       <div className="space-y-1.5">
         {data?.surahs.map((s) => (
           <button
