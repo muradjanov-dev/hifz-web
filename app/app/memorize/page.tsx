@@ -590,7 +590,7 @@ function AyahCard({ ayah, singleStage }: { ayah: AyahPayload; singleStage: boole
 
       {/* Mushaf image (single-stage only) — open by default, large & clear */}
       {singleStage && (
-        <details open className="border-t border-emerald-200/40 dark:border-emerald-900/30">
+        <details className="border-t border-emerald-200/40 dark:border-emerald-900/30">
           <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
             📖 Mushaf rasmida ko&apos;rish
           </summary>
