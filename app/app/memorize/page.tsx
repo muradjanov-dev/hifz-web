@@ -225,6 +225,28 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
   const [surahDoneName, setSurahDoneName] = useState("");
   const [limitInfo, setLimitInfo]   = useState<{ limit: number; used: number } | null>(null);
 
+  // Local repetition counter — the user taps once per recitation. Resets
+  // whenever we move to a new stage / ayah / target.
+  const [done, setDone] = useState(0);
+  const repKey = `${stage}:${target}:${progress?.current_ayah_in_surah ?? 0}:${session.session_id ?? ""}`;
+  useEffect(() => { setDone(0); }, [repKey]);
+  const remaining = Math.max(0, target - done);
+
+  function tapRep() {
+    if (advancing || done >= target) return;
+    const next = done + 1;
+    setDone(next);
+    // Light haptic feedback inside Telegram.
+    try {
+      (window as unknown as { Telegram?: { WebApp?: { HapticFeedback?: { impactOccurred?: (s: string) => void } } } })
+        .Telegram?.WebApp?.HapticFeedback?.impactOccurred?.(next >= target ? "heavy" : "light");
+    } catch { /* not in Telegram */ }
+    if (next >= target) {
+      // Let the user see the last tap land before transitioning.
+      setTimeout(() => advance(), 450);
+    }
+  }
+
   async function advance() {
     setAdvancing(true);
     setError(null);
@@ -272,10 +294,10 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
   if (surahDone) return <SurahCompleteCard surahName={surahDoneName} onDone={onChange} />;
   if (limitInfo) return <LimitReachedCard {...limitInfo} onClose={() => setLimitInfo(null)} />;
 
-  const buttonLabel = (() => {
-    if (stage === "repeat_pair") return `✅ Juftlikni ${target} marta o'qidim`;
-    if (stage === "accumulate")  return `✅ Hammasini ${target} marta o'qidim`;
-    return `✅ ${target} marta o'qidim`;
+  const tapHint = (() => {
+    if (stage === "repeat_pair") return "2 oyatni birga o'qib, har safar bosing";
+    if (stage === "accumulate")  return "Hammasini birga o'qib, har safar bosing";
+    return "Oyatni o'qib, har safar bosing";
   })();
 
   return (
@@ -323,20 +345,58 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
         ))}
       </div>
 
-      {/* Action button */}
-      <button
-        onClick={advance}
-        disabled={advancing}
-        className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-emerald-600 text-base font-medium text-white shadow-lg shadow-emerald-600/20 transition active:scale-[0.98] disabled:opacity-50"
-      >
-        {advancing ? "Saqlanmoqda..." : buttonLabel}
-      </button>
+      {/* Rep counter — tap once per recitation, counts down */}
+      <div className="select-none">
+        <button
+          onClick={tapRep}
+          disabled={advancing || done >= target}
+          className="relative flex h-48 w-full flex-col items-center justify-center gap-0.5 rounded-3xl bg-gradient-to-br from-emerald-500 to-emerald-700 text-white shadow-xl shadow-emerald-600/30 transition active:scale-[0.97] disabled:active:scale-100"
+        >
+          {advancing ? (
+            <span
+              className="text-2xl font-semibold"
+              style={{ animation: "hifz-done 0.5s ease-out" }}
+            >
+              ✅ Barakallah!
+            </span>
+          ) : (
+            <>
+              <span className="text-xs font-medium uppercase tracking-wide text-emerald-50/80">
+                Yana o&apos;qishingiz kerak
+              </span>
+              <span
+                key={done}
+                className="text-7xl font-bold tabular-nums leading-none"
+                style={{ animation: "hifz-pop 0.28s ease-out" }}
+              >
+                {remaining}
+              </span>
+              <span className="text-sm text-emerald-50/90">marta</span>
+            </>
+          )}
+        </button>
 
-      <p className="mt-3 text-center text-[11px] text-zinc-500 dark:text-zinc-400">
-        {stage === "ayah" && "Oyat uzunligiga qarab takrorlar soni."}
-        {stage === "repeat_pair" && "2 ta oyatni birga 5 marta o'qing."}
-        {stage === "accumulate" && "Oxirgi 5 ta oyatni birga takrorlang."}
-      </p>
+        {/* Progress dots */}
+        {target > 0 && (
+          <div className="mt-3 flex flex-wrap justify-center gap-1.5">
+            {Array.from({ length: target }).map((_, i) => (
+              <span
+                key={i}
+                className={cn(
+                  "size-2.5 rounded-full transition-all duration-300",
+                  i < done
+                    ? "scale-110 bg-emerald-500"
+                    : "bg-zinc-200 dark:bg-zinc-700"
+                )}
+              />
+            ))}
+          </div>
+        )}
+
+        <p className="mt-3 text-center text-xs text-zinc-500 dark:text-zinc-400">
+          {done}/{target} marta · {tapHint}
+        </p>
+      </div>
     </>
   );
 }

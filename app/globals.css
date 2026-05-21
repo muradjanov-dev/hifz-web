@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Memorize rep-counter: pop the remaining number on each tap. */
+@keyframes hifz-pop {
+  0%   { transform: scale(0.55); opacity: 0.4; }
+  55%  { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+/* Final "done" pulse when the last repetition lands. */
+@keyframes hifz-done {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.25); }
+  100% { transform: scale(1); }
+}
