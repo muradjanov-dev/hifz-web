@@ -1,9 +1,18 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { useApi } from "@/lib/use-api";
 import { getInitData } from "@/lib/telegram-client";
 import { cn } from "@/lib/cn";
+import { useStoryMode } from "@/lib/prefs";
+import {
+  VALLEYS,
+  STORIES,
+  STORY_TYPE_LABEL,
+  completedCount,
+  type Valley,
+} from "@/lib/valleys";
 
 type Surah = { number: number; name: string; ayah_count: number; juz?: number[] };
 
@@ -74,6 +83,7 @@ const RECITERS = [
 function SurahPicker({ onStarted }: { onStarted: () => void }) {
   const { data, isLoading } = useApi<{ surahs: Surah[] }>("/api/surahs");
   const { data: quota } = useApi<{ is_premium: boolean }>("/api/me/quota");
+  const { storyMode, toggle: toggleStory } = useStoryMode();
   const [starting, setStarting] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [reciter, setReciter] = useState<string>("husary");
@@ -122,6 +132,35 @@ function SurahPicker({ onStarted }: { onStarted: () => void }) {
         <p className="text-xs text-zinc-500 dark:text-zinc-400">
           Qori va surani tanlang. Har oyat uzunligiga qarab 5-11 marta takrorlanadi.
         </p>
+
+        {/* Story mode toggle */}
+        <button
+          onClick={toggleStory}
+          className="mt-3 flex w-full items-center justify-between rounded-xl border border-zinc-200/70 bg-white px-3 py-2.5 text-left dark:border-zinc-800/70 dark:bg-zinc-900"
+        >
+          <span className="flex items-center gap-2">
+            <span className="text-lg">🗺️</span>
+            <span>
+              <span className="block text-sm font-medium">Hikoya rejimi</span>
+              <span className="block text-[11px] text-zinc-500 dark:text-zinc-400">
+                {storyMode ? "Vodiy o'tganda qissa ochiladi" : "Oddiy yodlash — qissasiz"}
+              </span>
+            </span>
+          </span>
+          <span
+            className={cn(
+              "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition",
+              storyMode ? "bg-violet-600" : "bg-zinc-300 dark:bg-zinc-700"
+            )}
+          >
+            <span
+              className={cn(
+                "inline-block size-5 transform rounded-full bg-white transition",
+                storyMode ? "translate-x-[22px]" : "translate-x-0.5"
+              )}
+            />
+          </span>
+        </button>
       </header>
 
       {/* Reciter picker */}
@@ -225,6 +264,26 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
   const [surahDoneName, setSurahDoneName] = useState("");
   const [limitInfo, setLimitInfo]   = useState<{ limit: number; used: number } | null>(null);
 
+  // Story mode: reveal a valley's story when the user crosses its boundary.
+  const { storyMode } = useStoryMode();
+  const { data: me, mutate: refreshMe } = useApi<{ total_verses?: number }>("/api/me");
+  const prevDoneRef = useRef<number | null>(null);
+  const [storyValley, setStoryValley] = useState<Valley | null>(null);
+
+  useEffect(() => {
+    const total = me?.total_verses ?? 0;
+    const reached = completedCount(total);
+    if (prevDoneRef.current === null) {
+      prevDoneRef.current = reached; // baseline, don't fire on first load
+      return;
+    }
+    if (storyMode && reached > prevDoneRef.current) {
+      const v = VALLEYS[reached - 1]; // newly completed valley (1-indexed)
+      if (v) setStoryValley(v);
+    }
+    prevDoneRef.current = reached;
+  }, [me?.total_verses, storyMode]);
+
   // Local repetition counter — the user taps once per recitation. Resets
   // whenever we move to a new stage / ayah / target.
   const [done, setDone] = useState(0);
@@ -265,6 +324,8 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
         throw new Error(j.error || `HTTP ${res.status}`);
       }
       const j = await res.json();
+      // Refresh cumulative total so the story-mode effect can detect a crossing.
+      if (storyMode) refreshMe();
       if (j.surah_complete) {
         setSurahDoneName(session.surah_name);
         setSurahDone(true);
@@ -397,7 +458,78 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
           {done}/{target} marta · {tapHint}
         </p>
       </div>
+
+      {storyValley && (
+        <StoryReveal valley={storyValley} onClose={() => setStoryValley(null)} />
+      )}
     </>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Story reveal — celebratory modal when a valley is crossed (story mode on)
+// ──────────────────────────────────────────────────────────────────────────────
+
+function StoryReveal({ valley, onClose }: { valley: Valley; onClose: () => void }) {
+  const story = STORIES[valley.id];
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-md rounded-t-3xl bg-white p-6 pb-10 shadow-2xl dark:bg-zinc-900"
+        style={{ animation: "hifz-sheet 0.25s ease-out" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+
+        <div className="text-center">
+          <div className="text-5xl">🎉</div>
+          <p className="mt-2 text-xs font-medium uppercase tracking-wide text-violet-600 dark:text-violet-400">
+            {valley.id}-vodiy ochildi · {valley.juz}-pora
+          </p>
+          <h2 className="mt-1 text-xl font-semibold">{valley.name}</h2>
+        </div>
+
+        {story ? (
+          <div className="mt-4">
+            <span className="inline-block rounded-full bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">
+              {STORY_TYPE_LABEL[story.type]}
+            </span>
+            <h3 className="mt-3 text-base font-semibold">{story.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+              {story.body}
+            </p>
+            <div className="mt-4 rounded-xl border-l-4 border-emerald-500 bg-emerald-50/60 p-3 dark:bg-emerald-950/30">
+              <p className="text-[10px] uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                Manba
+              </p>
+              <p className="mt-0.5 text-xs text-zinc-700 dark:text-zinc-300">{story.source}</p>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
+            Yangi vodiyni zabt etdingiz! Bu vodiy hikoyasi tez orada qo&apos;shiladi.
+          </p>
+        )}
+
+        <div className="mt-6 space-y-2">
+          <button
+            onClick={onClose}
+            className="block w-full rounded-full bg-emerald-600 py-2.5 text-sm font-medium text-white"
+          >
+            Yodlashni davom ettirish
+          </button>
+          <Link
+            href="/app/journey"
+            className="block w-full rounded-full border border-zinc-200 py-2.5 text-center text-sm font-medium dark:border-zinc-700"
+          >
+            🗺️ Xaritani ko&apos;rish
+          </Link>
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -148,6 +148,206 @@ export const STORIES: Record<number, Story> = {
       "duolar qabul bo'ladigan markaz.",
     source: "Qur'on, Al-Baqara (2:124–129).",
   },
+
+  // ── Juz 2 (valleys 11–20): Al-Baqara 142–252 ────────────────────────────────
+  11: {
+    name: "Qibla vodiysi",
+    type: "qissa",
+    title: "Qibla o'zgardi",
+    body:
+      "Musulmonlarning yuzi Baytul-Maqdisdan Makkadagi Masjidul-Haromga — Ka'baga " +
+      "qaratildi: «Yuzingni Masjidul-Harom tomon burgin» (2:144). Bu — yangi ummatning " +
+      "o'z yo'nalishini topgani belgisi edi.",
+    source: "Qur'on, Al-Baqara (2:142–150).",
+  },
+  12: {
+    name: "Sabr vodiysi",
+    type: "hikmat",
+    title: "Sabr va shahidlar",
+    body:
+      "«Sabr va namoz bilan yordam so'rang» (2:153). Alloh yo'lida o'ldirilganlarni " +
+      "«o'lik demang — ular tirik, lekin sezmaysiz» (2:154). Sinov ochlik va qo'rquv " +
+      "bilan keladi, sabr qilganlarga esa xushxabar bor.",
+    source: "Qur'on, Al-Baqara (2:153–157).",
+  },
+  13: {
+    name: "Yaxshilik vodiysi",
+    type: "hikmat",
+    title: "Haqiqiy yaxshilik (al-birr)",
+    body:
+      "Yaxshilik faqat yuzni sharq yo g'arbga burishda emas — balki Allohga, oxiratga, " +
+      "farishtalarga iymon keltirib, sevgan molini qarindosh, yetim va miskinlarga " +
+      "berish, namoz o'qib, zakot berish va ahdga vafo qilishdadir (2:177).",
+    source: "Qur'on, Al-Baqara (2:177).",
+  },
+  14: {
+    name: "Adolat vodiysi",
+    type: "hikmat",
+    title: "Qasosda hayot bor",
+    body:
+      "«Ey aql egalari, qasosda siz uchun hayot bordir — shoyad taqvodor bo'lsangiz» " +
+      "(2:179). Adolat jamiyatni asraydi; afv va kelishuv esa undan-da ulug'roqdir.",
+    source: "Qur'on, Al-Baqara (2:178–179).",
+  },
+  15: {
+    name: "Ro'za vodiysi",
+    type: "qissa",
+    title: "Ramazon va ro'za",
+    body:
+      "«Ro'za sizdan oldingilarga farz qilingani kabi sizga ham farz qilindi — shoyad " +
+      "taqvodor bo'lsangiz» (2:183). Ramazon — Qur'on nozil bo'lgan oy; u sabr va " +
+      "yaqinlik maktabi.",
+    source: "Qur'on, Al-Baqara (2:183–185).",
+  },
+  16: {
+    name: "Haj vodiysi",
+    type: "qissa",
+    title: "Haj — buyuk safar",
+    body:
+      "«Haj va umrani Alloh uchun to'liq ado eting» (2:196). Zod-rohatning eng yaxshisi " +
+      "— taqvo (2:197). Haj — butun dunyo musulmonlarini bir maqsad sari yig'adigan safar.",
+    source: "Qur'on, Al-Baqara (2:196–203).",
+  },
+  17: {
+    name: "Tolut vodiysi",
+    type: "qissa",
+    title: "Tolut podshoh bo'ldi",
+    body:
+      "Bani Isroil payg'ambaridan podshoh so'radi. Alloh Tolutni tanladi — boyligi emas, " +
+      "ilm va kuchi bilan. Uning podsholigi belgisi — ichida sakina bo'lgan tobutning " +
+      "qaytishi edi (2:248).",
+    source: "Qur'on, Al-Baqara (2:246–248).",
+  },
+  18: {
+    name: "Sinov vodiysi",
+    type: "qissa",
+    title: "Daryo sinovi",
+    body:
+      "Tolut askarlarini daryo bilan sinadi: «Kim undan ichsa, mendan emas». Ko'pchilik " +
+      "ichdi, ozchilik sabr qildi. «Qancha kichik jamoa, Alloh izni bilan katta jamoani " +
+      "yenggan!» (2:249).",
+    source: "Qur'on, Al-Baqara (2:249).",
+  },
+  19: {
+    name: "Jolut vodiysi",
+    type: "qissa",
+    title: "Dovud Jolutni yengdi",
+    body:
+      "Yosh Dovud (a.s.) ulkan Jolutni (Goliyat) sopqon toshi bilan yengdi. Alloh unga " +
+      "podsholik va hikmat berdi. «Agar Alloh odamlarni bir-biri bilan to'smaganida, yer " +
+      "buzilardi» (2:251).",
+    source: "Qur'on, Al-Baqara (2:250–251).",
+  },
+  20: {
+    name: "Ne'mat vodiysi",
+    type: "hikmat",
+    title: "Payg'ambarlar darajalari",
+    body:
+      "«Ana o'sha payg'ambarlarning ba'zilarini ba'zilaridan ustun qildik» (2:253). " +
+      "Har biriga vahiy, mo'jiza va o'z ummati berildi — ammo manba bitta: Alloh.",
+    source: "Qur'on, Al-Baqara (2:252–253).",
+  },
+
+  // ── Juz 3 (valleys 21–30): Al-Baqara 253 – Oli Imron 92 ─────────────────────
+  21: {
+    name: "Oyatul Kursiy vodiysi",
+    type: "qissa",
+    title: "Oyatlar shohi — Oyatul Kursiy",
+    body:
+      "«Alloh — Undan o'zga iloh yo'q, U tirik va abadiy turuvchidir. Uni mudroq ham, " +
+      "uyqu ham tutmaydi... Uning Kursiysi osmonlar va yerni qamragan» (2:255). Bu — " +
+      "Qur'ondagi eng buyuk oyat.",
+    source: "Qur'on, Al-Baqara (2:255); Payg'ambar ﷺ uni Qur'onning eng ulug' oyati dedi (Muslim, 810).",
+  },
+  22: {
+    name: "Erkinlik vodiysi",
+    type: "hikmat",
+    title: "Dinda majburlash yo'q",
+    body:
+      "«Dinda majburlash yo'q — to'g'ri yo'l adashishdan ajralib bo'ldi» (2:256). Iymon " +
+      "— ko'ngil ishi; Alloh tog'utni inkor etib Unga ishongan kishi mustahkam halqaga " +
+      "yopishgan bo'ladi.",
+    source: "Qur'on, Al-Baqara (2:256).",
+  },
+  23: {
+    name: "Munozara vodiysi",
+    type: "qissa",
+    title: "Ibrohim va kibrli podsho",
+    body:
+      "Podsho (Namrud) «Men ham tiriltiraman va o'ldiraman» dedi. Ibrohim (a.s.): «Alloh " +
+      "quyoshni sharqdan chiqaradi, sen g'arbdan chiqargin-chi!» dedi — va kofir " +
+      "podshoh dovdirab qoldi (2:258).",
+    source: "Qur'on, Al-Baqara (2:258).",
+  },
+  24: {
+    name: "Tiriltirish vodiysi",
+    type: "qissa",
+    title: "Yuz yillik uyqu",
+    body:
+      "Bir kishi vayrona qishloqdan o'tib: «Alloh buni qanday tiriltiradi?» dedi. Alloh " +
+      "uni yuz yil o'ldirib, so'ng tiriltirdi va eshagini ko'z oldida qayta tikladi — " +
+      "qiyomatga yorqin dalil (2:259).",
+    source: "Qur'on, Al-Baqara (2:259).",
+  },
+  25: {
+    name: "Iymon vodiysi",
+    type: "qissa",
+    title: "To'rt qush",
+    body:
+      "Ibrohim (a.s.): «Robbim, o'liklarni qanday tiriltirishingni ko'rsat», dedi. Alloh " +
+      "to'rt qushni so'yib, tog'larga taqsimlab, chaqirishini buyurdi — ular uchib " +
+      "qaytishdi. Bu — qalb taskini uchun edi (2:260).",
+    source: "Qur'on, Al-Baqara (2:260).",
+  },
+  26: {
+    name: "Saxovat vodiysi",
+    type: "hikmat",
+    title: "Bir don — yetti boshoq",
+    body:
+      "«Alloh yo'lida mol sarflaganlar misoli — bir donga o'xshaydiki, undan yetti boshoq " +
+      "unib, har boshoqda yuz don bo'ladi» (2:261). Alloh xohlaganiga ko'paytiradi. " +
+      "Saxovat hech qachon kambag'al qilmaydi.",
+    source: "Qur'on, Al-Baqara (2:261–274).",
+  },
+  27: {
+    name: "Ribo vodiysi",
+    type: "hikmat",
+    title: "Ribo taqiqlandi",
+    body:
+      "«Alloh savdoni halol, ribo (sudxo'rlik)ni harom qildi» (2:275). Ribo barakani " +
+      "yo'qotadi, sadaqa esa ko'paytiradi (2:276). Bu — adolatli iqtisod yo'li.",
+    source: "Qur'on, Al-Baqara (2:275–281).",
+  },
+  28: {
+    name: "Xotima vodiysi",
+    type: "hikmat",
+    title: "Baqara xotimasi",
+    body:
+      "Surani ikki ulug' oyat yakunlaydi: «Alloh hech kimni toqatidan tashqari yuklamaydi» " +
+      "va «Robbimiz, bizga kuchimiz yetmas narsani yuklamagin... bizni kechir, bizga rahm " +
+      "qil» (2:286). Bu duo — har sayyohning qalqoni.",
+    source: "Qur'on, Al-Baqara (2:285–286); bu ikki oyat fazli haqida (Bukhoriy, 5009).",
+  },
+  29: {
+    name: "Imron vodiysi",
+    type: "qissa",
+    title: "Imron oilasi va Maryam",
+    body:
+      "Imronning rafiqasi qornidagi bolani Allohga atadi. Maryam tug'ildi va Alloh uni " +
+      "go'zal qabul qilib o'stirdi; Zakariyo har kirganida uning huzuridan rizq topardi " +
+      "(3:35–37).",
+    source: "Qur'on, Oli Imron (3:33–37).",
+  },
+  30: {
+    name: "Zakariyo vodiysi",
+    type: "qissa",
+    title: "Zakariyo va Yahyo",
+    body:
+      "Keksaygan Zakariyo (a.s.) farzand so'rab duo qildi. Alloh unga Yahyoni bashorat " +
+      "qildi — «sayyid, iffatli va solih payg'ambar» (3:39). Umid hech qachon " +
+      "kech emas.",
+    source: "Qur'on, Oli Imron (3:38–41).",
+  },
 };
 
 // Cumulative ayah count required to *complete* valley n (1-indexed).
