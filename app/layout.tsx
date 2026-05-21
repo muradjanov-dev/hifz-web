@@ -21,7 +21,7 @@ const amiri = Amiri({
 
 export const metadata: Metadata = {
   title: "Qur'on Yodlaymiz",
-  description: "Qur'oni Karimni ilmiy va tizimli usulda yodlash uchun yordamchi bot va webapp.",
+  description: "Qur'oni Karimni ilmiy va tizimli usulda yodlash uchun yordamchi bot va website.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL || "https://quranyodla.com"
   ),

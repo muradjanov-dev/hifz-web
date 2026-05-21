@@ -37,7 +37,7 @@ export default function Landing() {
               href="/app"
               className="inline-flex h-12 items-center justify-center rounded-full border border-zinc-200 bg-white/80 px-7 text-sm font-medium text-zinc-900 backdrop-blur transition hover:bg-white dark:border-zinc-800 dark:bg-zinc-900/80 dark:text-zinc-100 dark:hover:bg-zinc-900"
             >
-              Webapp&apos;ni ko&apos;rish →
+              Website&apos;ni ko&apos;rish →
             </Link>
           </div>
         </div>

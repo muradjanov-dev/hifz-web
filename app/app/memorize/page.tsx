@@ -264,6 +264,31 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
   const [surahDoneName, setSurahDoneName] = useState("");
   const [limitInfo, setLimitInfo]   = useState<{ limit: number; used: number } | null>(null);
 
+  // Reciter switcher (in-session).
+  const { data: quota } = useApi<{ is_premium: boolean }>("/api/me/quota");
+  const currentReciter = session.reciter || "husary";
+  const [switchingReciter, setSwitchingReciter] = useState(false);
+
+  async function switchReciter(id: string) {
+    const cfg = RECITERS.find((r) => r.id === id);
+    if (!cfg || switchingReciter || id === currentReciter) return;
+    if (cfg.premium && !quota?.is_premium) return; // locked
+    setSwitchingReciter(true);
+    try {
+      const res = await fetch("/api/me/session/reciter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Telegram-Init-Data": getInitData() },
+        body: JSON.stringify({ reciter: id }),
+      });
+      if (res.ok) {
+        if (typeof window !== "undefined") localStorage.setItem("hifz_reciter", id);
+        onChange();
+      }
+    } finally {
+      setSwitchingReciter(false);
+    }
+  }
+
   // Story mode: reveal a valley's story when the user crosses its boundary.
   const { storyMode } = useStoryMode();
   const { data: me, mutate: refreshMe } = useApi<{ total_verses?: number }>("/api/me");
@@ -391,6 +416,34 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
         <span className="text-emerald-700 dark:text-emerald-300">
           {target} marta takror
         </span>
+      </div>
+
+      {/* Reciter switcher */}
+      <div className="mb-3">
+        <p className="mb-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">🎙️ Qori</p>
+        <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+          {RECITERS.map((r) => {
+            const locked = r.premium && !quota?.is_premium;
+            const active = currentReciter === r.id;
+            return (
+              <button
+                key={r.id}
+                onClick={() => switchReciter(r.id)}
+                disabled={locked || switchingReciter}
+                className={cn(
+                  "shrink-0 rounded-full border px-3 py-1.5 text-xs font-medium transition disabled:opacity-60",
+                  active
+                    ? "border-emerald-600 bg-emerald-600 text-white"
+                    : locked
+                    ? "border-zinc-200 text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
+                    : "border-zinc-200 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
+                )}
+              >
+                {locked ? "💎 " : ""}{r.name}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {error && (
