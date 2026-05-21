@@ -46,7 +46,7 @@ export default function JourneyPage() {
         </p>
       </header>
 
-      <section className="mb-6 rounded-2xl bg-gradient-to-br from-[#7e4b39] via-[#6a3f30] to-[#4f2e27] p-5 text-white shadow-lg shadow-[#6a3f30]/25">
+      <section className="mb-6 rounded-2xl bg-gradient-to-br from-teal-600 via-teal-700 to-emerald-800 p-5 text-white shadow-lg shadow-teal-700/25">
         <div className="flex items-end justify-between">
           <div>
             <p className="text-xs opacity-80">Hozirgi vodiy</p>
@@ -137,7 +137,7 @@ function RegionRoadmap({
               ? "bg-emerald-500 text-white"
               : regionLocked
               ? "bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-500"
-              : "bg-[#7e4736] text-white"
+              : "bg-teal-700 text-white"
           )}
         >
           {regionDone ? "✓" : juz}
@@ -165,7 +165,7 @@ function RegionRoadmap({
           <path
             d={pathD}
             fill="none"
-            stroke={regionLocked ? "rgb(212 212 216 / 0.6)" : "rgb(124 75 57 / 0.45)"}
+            stroke={regionLocked ? "rgb(212 212 216 / 0.6)" : "rgb(13 148 136 / 0.45)"}
             strokeWidth={4}
             strokeDasharray="1 6"
             strokeLinecap="round"
@@ -205,7 +205,7 @@ function RoadNode({
       className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
     >
       {isCurrent && (
-        <span className="mb-1 whitespace-nowrap rounded-full bg-[#7e4736] px-2 py-0.5 text-[10px] font-semibold text-white shadow">
+        <span className="mb-1 whitespace-nowrap rounded-full bg-teal-700 px-2 py-0.5 text-[10px] font-semibold text-white shadow">
           Siz shu yerda
         </span>
       )}
@@ -213,7 +213,7 @@ function RoadNode({
         className={cn(
           "flex items-center justify-center rounded-full font-bold shadow-md transition active:scale-95",
           isCurrent
-            ? "size-16 bg-gradient-to-br from-[#9a5942] to-[#6a3c2d] text-white ring-4 ring-[#bf937c]/45 dark:ring-[#9a5942]/45"
+            ? "size-16 bg-gradient-to-br from-teal-500 to-emerald-700 text-white ring-4 ring-teal-300/50 dark:ring-teal-500/40"
             : isDone
             ? "size-14 bg-gradient-to-br from-emerald-400 to-emerald-600 text-white"
             : "size-12 bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600"
@@ -231,7 +231,7 @@ function RoadNode({
         <span
           className={cn(
             "mt-1 max-w-[88px] truncate text-[10px] font-medium",
-            isCurrent ? "text-[#8a4e37] dark:text-[#cda189]" : "text-zinc-600 dark:text-zinc-400"
+            isCurrent ? "text-teal-700 dark:text-teal-400" : "text-zinc-600 dark:text-zinc-400"
           )}
         >
           {valley.name}
@@ -276,7 +276,7 @@ function StorySheet({
       >
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-700" />
 
-        <p className="text-sm font-medium uppercase tracking-wide text-[#8a4e37] dark:text-[#cda189]">
+        <p className="text-sm font-medium uppercase tracking-wide text-teal-700 dark:text-teal-400">
           {valley.id}-vodiy · {valley.juz}-pora
         </p>
         <h2 className="mt-1 text-2xl font-semibold">{valley.name}</h2>
@@ -290,7 +290,7 @@ function StorySheet({
           </div>
         ) : story ? (
           <div className="mt-4">
-            <span className="inline-block rounded-full bg-[#8a4e37]/10 px-3 py-1 text-sm font-medium text-[#7a4530] dark:bg-[#cda189]/15 dark:text-[#d8b29d]">
+            <span className="inline-block rounded-full bg-teal-50 px-3 py-1 text-sm font-medium text-teal-700 dark:bg-teal-950/40 dark:text-teal-300">
               {STORY_TYPE_LABEL[story.type]}
             </span>
             <h3 className="mt-3 text-xl font-semibold">{story.title}</h3>

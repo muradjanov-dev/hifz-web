@@ -150,7 +150,7 @@ function SurahPicker({ onStarted }: { onStarted: () => void }) {
           <span
             className={cn(
               "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition",
-              storyMode ? "bg-[#7e4736]" : "bg-zinc-300 dark:bg-zinc-700"
+              storyMode ? "bg-teal-700" : "bg-zinc-300 dark:bg-zinc-700"
             )}
           >
             <span
@@ -486,7 +486,7 @@ function StoryReveal({ valley, onClose }: { valley: Valley; onClose: () => void 
 
         <div className="text-center">
           <div className="text-5xl">🎉</div>
-          <p className="mt-2 text-sm font-medium uppercase tracking-wide text-[#8a4e37] dark:text-[#cda189]">
+          <p className="mt-2 text-sm font-medium uppercase tracking-wide text-teal-700 dark:text-teal-400">
             {valley.id}-vodiy ochildi · {valley.juz}-pora
           </p>
           <h2 className="mt-1 text-2xl font-semibold">{valley.name}</h2>
@@ -494,7 +494,7 @@ function StoryReveal({ valley, onClose }: { valley: Valley; onClose: () => void 
 
         {story ? (
           <div className="mt-4">
-            <span className="inline-block rounded-full bg-[#8a4e37]/10 px-3 py-1 text-sm font-medium text-[#7a4530] dark:bg-[#cda189]/15 dark:text-[#d8b29d]">
+            <span className="inline-block rounded-full bg-teal-50 px-3 py-1 text-sm font-medium text-teal-700 dark:bg-teal-950/40 dark:text-teal-300">
               {STORY_TYPE_LABEL[story.type]}
             </span>
             <h3 className="mt-3 text-xl font-semibold">{story.title}</h3>
