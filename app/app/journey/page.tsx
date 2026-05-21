@@ -46,7 +46,7 @@ export default function JourneyPage() {
         </p>
       </header>
 
-      <section className="mb-6 rounded-2xl bg-gradient-to-br from-indigo-500 via-violet-600 to-purple-700 p-5 text-white shadow-lg shadow-violet-600/20">
+      <section className="mb-6 rounded-2xl bg-gradient-to-br from-orange-500 via-orange-600 to-red-600 p-5 text-white shadow-lg shadow-orange-600/30">
         <div className="flex items-end justify-between">
           <div>
             <p className="text-xs opacity-80">Hozirgi vodiy</p>
@@ -137,7 +137,7 @@ function RegionRoadmap({
               ? "bg-emerald-500 text-white"
               : regionLocked
               ? "bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-500"
-              : "bg-violet-500 text-white"
+              : "bg-orange-600 text-white"
           )}
         >
           {regionDone ? "✓" : juz}
@@ -165,7 +165,7 @@ function RegionRoadmap({
           <path
             d={pathD}
             fill="none"
-            stroke={regionLocked ? "rgb(212 212 216 / 0.6)" : "rgb(139 92 246 / 0.45)"}
+            stroke={regionLocked ? "rgb(212 212 216 / 0.6)" : "rgb(234 88 12 / 0.5)"}
             strokeWidth={4}
             strokeDasharray="1 6"
             strokeLinecap="round"
@@ -205,7 +205,7 @@ function RoadNode({
       className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
     >
       {isCurrent && (
-        <span className="mb-1 whitespace-nowrap rounded-full bg-violet-600 px-2 py-0.5 text-[10px] font-semibold text-white shadow">
+        <span className="mb-1 whitespace-nowrap rounded-full bg-orange-600 px-2 py-0.5 text-[10px] font-semibold text-white shadow">
           Siz shu yerda
         </span>
       )}
@@ -213,7 +213,7 @@ function RoadNode({
         className={cn(
           "flex items-center justify-center rounded-full font-bold shadow-md transition active:scale-95",
           isCurrent
-            ? "size-16 bg-gradient-to-br from-violet-500 to-purple-700 text-white ring-4 ring-violet-300/70 dark:ring-violet-500/40"
+            ? "size-16 bg-gradient-to-br from-orange-500 to-red-600 text-white ring-4 ring-orange-300/70 dark:ring-orange-500/40"
             : isDone
             ? "size-14 bg-gradient-to-br from-emerald-400 to-emerald-600 text-white"
             : "size-12 bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600"
@@ -231,7 +231,7 @@ function RoadNode({
         <span
           className={cn(
             "mt-1 max-w-[88px] truncate text-[10px] font-medium",
-            isCurrent ? "text-violet-700 dark:text-violet-300" : "text-zinc-600 dark:text-zinc-400"
+            isCurrent ? "text-orange-700 dark:text-orange-400" : "text-zinc-600 dark:text-zinc-400"
           )}
         >
           {valley.name}
@@ -276,55 +276,57 @@ function StorySheet({
       >
         <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-zinc-300 dark:bg-zinc-700" />
 
-        <p className="text-xs font-medium uppercase tracking-wide text-violet-600 dark:text-violet-400">
+        <p className="text-sm font-medium uppercase tracking-wide text-orange-600 dark:text-orange-400">
           {valley.id}-vodiy · {valley.juz}-pora
         </p>
-        <h2 className="mt-1 text-xl font-semibold">{valley.name}</h2>
+        <h2 className="mt-1 text-2xl font-semibold">{valley.name}</h2>
 
         {locked ? (
           <div className="mt-6 rounded-2xl bg-zinc-100/80 p-5 text-center dark:bg-zinc-800/60">
             <div className="mb-2 text-4xl">🔒</div>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            <p className="text-base text-zinc-600 dark:text-zinc-400">
               Bu vodiy hali yopiq. Ochish uchun yana <b>{remaining}</b> oyat yodlang.
             </p>
-            <Link
-              href="/app/memorize"
-              className="mt-4 inline-flex h-11 items-center justify-center rounded-full bg-emerald-600 px-6 text-sm font-medium text-white"
-            >
-              📗 Yodlashni davom ettirish
-            </Link>
           </div>
         ) : story ? (
           <div className="mt-4">
-            <span className="inline-block rounded-full bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">
+            <span className="inline-block rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
               {STORY_TYPE_LABEL[story.type]}
             </span>
-            <h3 className="mt-3 text-base font-semibold">{story.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+            <h3 className="mt-3 text-xl font-semibold">{story.title}</h3>
+            <p className="mt-3 text-[17px] leading-8 text-zinc-700 dark:text-zinc-200">
               {story.body}
             </p>
-            <div className="mt-4 rounded-xl border-l-4 border-emerald-500 bg-emerald-50/60 p-3 dark:bg-emerald-950/30">
-              <p className="text-[10px] uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+            <div className="mt-5 rounded-xl border-l-4 border-emerald-500 bg-emerald-50/60 p-4 dark:bg-emerald-950/30">
+              <p className="text-xs uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
                 Manba
               </p>
-              <p className="mt-0.5 text-xs text-zinc-700 dark:text-zinc-300">{story.source}</p>
+              <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{story.source}</p>
             </div>
           </div>
         ) : (
           <div className="mt-6 rounded-2xl bg-zinc-100/80 p-5 text-center dark:bg-zinc-800/60">
             <div className="mb-2 text-4xl">✨</div>
-            <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            <p className="text-base text-zinc-600 dark:text-zinc-400">
               Ushbu vodiy hikoyasi tez orada qo&apos;shiladi. Sayohatni davom ettiring!
             </p>
           </div>
         )}
 
-        <button
-          onClick={onClose}
-          className="mt-6 block w-full rounded-full border border-zinc-200 py-2.5 text-sm font-medium dark:border-zinc-700"
-        >
-          Yopish
-        </button>
+        <div className="mt-6 space-y-2">
+          <Link
+            href="/app/memorize"
+            className="flex h-12 items-center justify-center rounded-full bg-emerald-600 text-base font-medium text-white shadow-lg shadow-emerald-600/20"
+          >
+            📗 Yodlash bo&apos;limiga o&apos;tish
+          </Link>
+          <button
+            onClick={onClose}
+            className="block w-full rounded-full border border-zinc-200 py-2.5 text-sm font-medium dark:border-zinc-700"
+          >
+            Yopish
+          </button>
+        </div>
       </div>
     </div>
   );

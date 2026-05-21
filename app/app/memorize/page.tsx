@@ -150,7 +150,7 @@ function SurahPicker({ onStarted }: { onStarted: () => void }) {
           <span
             className={cn(
               "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition",
-              storyMode ? "bg-violet-600" : "bg-zinc-300 dark:bg-zinc-700"
+              storyMode ? "bg-orange-600" : "bg-zinc-300 dark:bg-zinc-700"
             )}
           >
             <span
@@ -486,30 +486,30 @@ function StoryReveal({ valley, onClose }: { valley: Valley; onClose: () => void 
 
         <div className="text-center">
           <div className="text-5xl">🎉</div>
-          <p className="mt-2 text-xs font-medium uppercase tracking-wide text-violet-600 dark:text-violet-400">
+          <p className="mt-2 text-sm font-medium uppercase tracking-wide text-orange-600 dark:text-orange-400">
             {valley.id}-vodiy ochildi · {valley.juz}-pora
           </p>
-          <h2 className="mt-1 text-xl font-semibold">{valley.name}</h2>
+          <h2 className="mt-1 text-2xl font-semibold">{valley.name}</h2>
         </div>
 
         {story ? (
           <div className="mt-4">
-            <span className="inline-block rounded-full bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 dark:bg-violet-950/40 dark:text-violet-300">
+            <span className="inline-block rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
               {STORY_TYPE_LABEL[story.type]}
             </span>
-            <h3 className="mt-3 text-base font-semibold">{story.title}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-zinc-700 dark:text-zinc-300">
+            <h3 className="mt-3 text-xl font-semibold">{story.title}</h3>
+            <p className="mt-3 text-[17px] leading-8 text-zinc-700 dark:text-zinc-200">
               {story.body}
             </p>
-            <div className="mt-4 rounded-xl border-l-4 border-emerald-500 bg-emerald-50/60 p-3 dark:bg-emerald-950/30">
-              <p className="text-[10px] uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+            <div className="mt-5 rounded-xl border-l-4 border-emerald-500 bg-emerald-50/60 p-4 dark:bg-emerald-950/30">
+              <p className="text-xs uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
                 Manba
               </p>
-              <p className="mt-0.5 text-xs text-zinc-700 dark:text-zinc-300">{story.source}</p>
+              <p className="mt-1 text-sm text-zinc-700 dark:text-zinc-300">{story.source}</p>
             </div>
           </div>
         ) : (
-          <p className="mt-4 text-center text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-4 text-center text-base text-zinc-600 dark:text-zinc-400">
             Yangi vodiyni zabt etdingiz! Bu vodiy hikoyasi tez orada qo&apos;shiladi.
           </p>
         )}

@@ -140,7 +140,7 @@ export default function Dashboard() {
       {/* Journey entry */}
       <Link
         href="/app/journey"
-        className="mb-5 flex items-center justify-between rounded-2xl bg-gradient-to-br from-indigo-500 via-violet-600 to-purple-700 p-5 text-white shadow-lg shadow-violet-600/20"
+        className="mb-5 flex items-center justify-between rounded-2xl bg-gradient-to-br from-orange-500 via-orange-600 to-red-600 p-5 text-white shadow-lg shadow-orange-600/30"
       >
         <div>
           <p className="text-sm font-semibold">🗺️ 300 Vodiy Sayohati</p>
