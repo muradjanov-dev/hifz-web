@@ -150,7 +150,7 @@ function SurahPicker({ onStarted }: { onStarted: () => void }) {
           <span
             className={cn(
               "relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition",
-              storyMode ? "bg-orange-600" : "bg-zinc-300 dark:bg-zinc-700"
+              storyMode ? "bg-[#7e4736]" : "bg-zinc-300 dark:bg-zinc-700"
             )}
           >
             <span
@@ -486,7 +486,7 @@ function StoryReveal({ valley, onClose }: { valley: Valley; onClose: () => void 
 
         <div className="text-center">
           <div className="text-5xl">🎉</div>
-          <p className="mt-2 text-sm font-medium uppercase tracking-wide text-orange-600 dark:text-orange-400">
+          <p className="mt-2 text-sm font-medium uppercase tracking-wide text-[#8a4e37] dark:text-[#cda189]">
             {valley.id}-vodiy ochildi · {valley.juz}-pora
           </p>
           <h2 className="mt-1 text-2xl font-semibold">{valley.name}</h2>
@@ -494,7 +494,7 @@ function StoryReveal({ valley, onClose }: { valley: Valley; onClose: () => void 
 
         {story ? (
           <div className="mt-4">
-            <span className="inline-block rounded-full bg-orange-50 px-3 py-1 text-sm font-medium text-orange-700 dark:bg-orange-950/40 dark:text-orange-300">
+            <span className="inline-block rounded-full bg-[#8a4e37]/10 px-3 py-1 text-sm font-medium text-[#7a4530] dark:bg-[#cda189]/15 dark:text-[#d8b29d]">
               {STORY_TYPE_LABEL[story.type]}
             </span>
             <h3 className="mt-3 text-xl font-semibold">{story.title}</h3>
@@ -588,19 +588,28 @@ function AyahCard({ ayah, singleStage }: { ayah: AyahPayload; singleStage: boole
         </div>
       )}
 
-      {/* Mushaf image (single-stage only) */}
+      {/* Mushaf image (single-stage only) — open by default, large & clear */}
       {singleStage && (
-        <details className="border-t border-emerald-200/40 dark:border-emerald-900/30">
-          <summary className="cursor-pointer px-4 py-2 text-xs font-medium text-zinc-600 dark:text-zinc-400">
+        <details open className="border-t border-emerald-200/40 dark:border-emerald-900/30">
+          <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
             📖 Mushaf rasmida ko&apos;rish
           </summary>
-          <div className="bg-white p-2">
+          <a
+            href={ayah.image_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block bg-white p-3"
+          >
             <img
               src={ayah.image_url}
               alt={`${ayah.surah}:${ayah.ayah}`}
-              className="block w-full h-auto"
+              className="mx-auto block w-full max-w-full rounded-lg"
+              style={{ minHeight: "120px" }}
             />
-          </div>
+            <span className="mt-2 block text-center text-[11px] text-zinc-400">
+              Kattalashtirish uchun bosing
+            </span>
+          </a>
         </details>
       )}
     </div>

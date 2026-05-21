@@ -64,7 +64,7 @@ function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label="Tungi rejim"
-      className="fixed right-3 top-3 z-50 flex size-9 items-center justify-center rounded-full border border-zinc-200/80 bg-white/80 text-zinc-700 shadow-sm backdrop-blur transition active:scale-95 dark:border-zinc-700/80 dark:bg-zinc-900/80 dark:text-zinc-200"
+      className="fixed bottom-20 right-4 z-40 flex size-10 items-center justify-center rounded-full border border-zinc-200/80 bg-white/90 text-zinc-700 shadow-md backdrop-blur transition active:scale-95 dark:border-zinc-700/80 dark:bg-zinc-900/90 dark:text-zinc-200"
     >
       {theme === "dark" ? <SunIcon className="size-4" /> : <MoonIcon className="size-4" />}
     </button>
