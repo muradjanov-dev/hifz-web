@@ -61,11 +61,14 @@ export default function MemorizePage() {
 // ──────────────────────────────────────────────────────────────────────────────
 
 const RECITERS = [
-  { id: "husary",   name: "Husary (Muallim)", premium: false },
-  { id: "afasy",    name: "Mishary Al-Afasy", premium: true  },
-  { id: "ghamdi",   name: "Sa'd Al-Ghamdi",   premium: true  },
-  { id: "sudais",   name: "As-Sudais",        premium: true  },
-  { id: "minshawi", name: "Minshawi",          premium: true  },
+  { id: "husary",     name: "Husary (Muallim)",    premium: false },
+  { id: "afasy",      name: "Mishary Al-Afasy",    premium: true  },
+  { id: "sudais",     name: "As-Sudais",           premium: true  },
+  { id: "minshawi",   name: "Minshawi (Muallim)",  premium: true  },
+  { id: "abdulbasit", name: "Abdul Basit",         premium: true  },
+  { id: "muaiqly",    name: "Maher Al-Muaiqly",    premium: true  },
+  { id: "shatri",     name: "Abu Bakr Ash-Shatri", premium: true  },
+  { id: "hudhaify",   name: "Al-Hudhaify",         premium: true  },
 ] as const;
 
 function SurahPicker({ onStarted }: { onStarted: () => void }) {
