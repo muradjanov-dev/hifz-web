@@ -76,6 +76,16 @@ export default function PremiumPage() {
             <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
               Kuniga 1 000 so&apos;mdan ham arzon — oyiga cheksiz yodlash imkoniyati.
             </p>
+
+            {/* Payment card */}
+            <div className="mt-4 rounded-xl border border-zinc-200/70 bg-white p-3 dark:border-zinc-800/70 dark:bg-zinc-950">
+              <p className="text-[10px] uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                💳 To&apos;lov uchun karta
+              </p>
+              <p className="mt-1 font-mono text-base font-semibold tracking-wide">5614 6812 0929 1941</p>
+              <p className="text-xs text-zinc-600 dark:text-zinc-400">👤 N. Murodjonov</p>
+            </div>
+
             <a
               href={`https://t.me/${BOT_USERNAME}?start=premium`}
               className="mt-4 flex h-12 items-center justify-center gap-2 rounded-full bg-emerald-600 text-sm font-medium text-white shadow-lg shadow-emerald-600/20"
