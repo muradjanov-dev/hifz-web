@@ -441,7 +441,7 @@ function LimitReachedCard({ limit, used, onClose }: { limit: number; used: numbe
         </button>
       </div>
       <p className="mt-6 rounded-lg bg-zinc-100/80 p-3 text-[11px] text-zinc-600 dark:bg-zinc-800/60 dark:text-zinc-400">
-        💡 Premium foydalanuvchilar: cheksiz oyat, 5 qori, audio yuklab olish,
+        💡 Premium foydalanuvchilar: cheksiz oyat, barcha qorilar, audio yuklab olish,
         batafsil grafiklar va <b>2x himmat</b>.
       </p>
     </div>
