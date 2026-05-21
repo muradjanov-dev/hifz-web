@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Drive the dark: variant from a `.dark` class (manual toggle) instead of the
+   OS media query, so users can override night mode in-app. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -12,11 +16,9 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
 }
 
 body {
@@ -37,4 +39,10 @@ body {
   0%   { transform: scale(1); }
   40%  { transform: scale(1.25); }
   100% { transform: scale(1); }
+}
+
+/* Journey story bottom-sheet slide-up. */
+@keyframes hifz-sheet {
+  0%   { transform: translateY(100%); opacity: 0.6; }
+  100% { transform: translateY(0); opacity: 1; }
 }

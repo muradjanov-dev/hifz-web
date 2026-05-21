@@ -137,6 +137,22 @@ export default function Dashboard() {
         <StatCard label="Takrorlar"   value={String(data.total_reps ?? 0)} sub="" />
       </section>
 
+      {/* Journey entry */}
+      <Link
+        href="/app/journey"
+        className="mb-5 flex items-center justify-between rounded-2xl bg-gradient-to-br from-indigo-500 via-violet-600 to-purple-700 p-5 text-white shadow-lg shadow-violet-600/20"
+      >
+        <div>
+          <p className="text-sm font-semibold">🗺️ 300 Vodiy Sayohati</p>
+          <p className="mt-0.5 text-xs opacity-90">
+            {Math.min(300, Math.floor((data.total_verses ?? 0) / 21))} / 300 vodiy o&apos;tildi · qissalar ochiladi
+          </p>
+        </div>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="size-5 opacity-90">
+          <path d="m9 18 6-6-6-6" />
+        </svg>
+      </Link>
+
       {/* Quick links */}
       <section className="space-y-2">
         <QuickLink href="/app/leaderboard" emoji="🏆" title="Reyting" subtitle="Top 50 ishtirokchi" />

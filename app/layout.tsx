@@ -36,7 +36,16 @@ export default function RootLayout({
     <html
       lang="uz"
       className={`${geistSans.variable} ${geistMono.variable} ${amiri.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
+      <head>
+        {/* Apply saved theme (or OS preference) before paint to avoid a flash. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-zinc-50 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
         {children}
       </body>

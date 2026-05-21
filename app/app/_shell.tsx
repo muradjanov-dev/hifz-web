@@ -5,10 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ready, expand } from "@/lib/telegram-client";
 import { cn } from "@/lib/cn";
+import { useTheme } from "@/lib/theme";
 
 const TABS = [
   { href: "/app",              label: "Bosh",      icon: HomeIcon },
   { href: "/app/memorize",     label: "Yodlash",   icon: BookIcon },
+  { href: "/app/journey",      label: "Sayohat",   icon: MapIcon },
   { href: "/app/leaderboard",  label: "Reyting",   icon: TrophyIcon },
   { href: "/app/profile",      label: "Profile",   icon: UserIcon },
 ];
@@ -23,11 +25,12 @@ export function MiniAppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col bg-zinc-50 dark:bg-zinc-950">
+      <ThemeToggle />
       <main className="flex-1 pb-20">{children}</main>
 
       {/* Bottom Tab Bar */}
       <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-zinc-200/80 bg-white/95 backdrop-blur-lg dark:border-zinc-800/80 dark:bg-zinc-900/95">
-        <div className="mx-auto grid max-w-md grid-cols-4">
+        <div className="mx-auto grid max-w-md grid-cols-5">
           {TABS.map((tab) => {
             const Active =
               tab.href === "/app"
@@ -52,6 +55,35 @@ export function MiniAppShell({ children }: { children: React.ReactNode }) {
         </div>
       </nav>
     </div>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, toggle } = useTheme();
+  return (
+    <button
+      onClick={toggle}
+      aria-label="Tungi rejim"
+      className="fixed right-3 top-3 z-50 flex size-9 items-center justify-center rounded-full border border-zinc-200/80 bg-white/80 text-zinc-700 shadow-sm backdrop-blur transition active:scale-95 dark:border-zinc-700/80 dark:bg-zinc-900/80 dark:text-zinc-200"
+    >
+      {theme === "dark" ? <SunIcon className="size-4" /> : <MoonIcon className="size-4" />}
+    </button>
+  );
+}
+
+function MoonIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+    </svg>
+  );
+}
+function SunIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+    </svg>
   );
 }
 
@@ -87,6 +119,14 @@ function BookIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
       <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+    </svg>
+  );
+}
+function MapIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+      <path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z" />
+      <path d="M15 5.764v15M9 3.236v15" />
     </svg>
   );
 }
