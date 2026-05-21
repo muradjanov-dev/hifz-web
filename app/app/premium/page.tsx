@@ -43,7 +43,7 @@ export default function PremiumPage() {
           <p className="text-xs uppercase tracking-wide text-zinc-500 dark:text-zinc-400">Joriy holat</p>
           <p className="mt-1 text-lg font-semibold">Bepul foydalanuvchi</p>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-            Bugun: {data?.used_today ?? 0} / {data?.limit ?? 5} oyat
+            Bugun: {data?.used_today ?? 0} / {data?.limit ?? 7} oyat
           </p>
         </section>
       )}
@@ -54,8 +54,8 @@ export default function PremiumPage() {
           Premium nima beradi?
         </h2>
         <div className="rounded-2xl border border-zinc-200/80 bg-white dark:border-zinc-800/80 dark:bg-zinc-900">
-          <FeatureRow label="Yangi oyat / kun"     free="5 ta"          premium="Cheksiz" highlight />
-          <FeatureRow label="Qori (audio)"          free="1 ta — Husary" premium="5 ta qori" highlight />
+          <FeatureRow label="Yangi oyat / kun"     free="7 ta"          premium="Cheksiz" highlight />
+          <FeatureRow label="Qori (audio)"          free="1 ta — Husary" premium="8 ta qori" highlight />
           <FeatureRow label="Himmat ko'paytirgich"  free="1×"            premium="2× ko'paytma" highlight />
           <FeatureRow label="Surah audio yuklab olish" free="—"          premium="✅" />
           <FeatureRow label="Batafsil grafiklar"    free="—"             premium="✅" />
@@ -70,11 +70,11 @@ export default function PremiumPage() {
         <>
           <section className="rounded-2xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50 to-white p-5 dark:border-emerald-900/40 dark:from-emerald-950/30 dark:to-zinc-900">
             <p className="text-3xl font-semibold">
-              <span className="text-emerald-700 dark:text-emerald-400">3 000</span>
+              <span className="text-emerald-700 dark:text-emerald-400">22 000</span>
               <span className="text-base text-zinc-600 dark:text-zinc-400"> so&apos;m / oy</span>
             </p>
             <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
-              Bir piyola choy narxiga — oyiga yodlash uchun cheksiz imkoniyat.
+              Kuniga 1 000 so&apos;mdan ham arzon — oyiga cheksiz yodlash imkoniyati.
             </p>
             <a
               href={`https://t.me/${BOT_USERNAME}?start=premium`}

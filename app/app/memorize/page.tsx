@@ -316,7 +316,7 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
       });
       if (res.status === 402) {
         const j = await res.json().catch(() => ({}));
-        setLimitInfo({ limit: j.limit ?? 5, used: j.used_today ?? 5 });
+        setLimitInfo({ limit: j.limit ?? 7, used: j.used_today ?? 7 });
         return;
       }
       if (!res.ok) {
@@ -474,11 +474,11 @@ function StoryReveal({ valley, onClose }: { valley: Valley; onClose: () => void 
   const story = STORIES[valley.id];
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-t-3xl bg-white p-6 pb-10 shadow-2xl dark:bg-zinc-900"
+        className="max-h-[88vh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-white p-6 pb-24 shadow-2xl dark:bg-zinc-900"
         style={{ animation: "hifz-sheet 0.25s ease-out" }}
         onClick={(e) => e.stopPropagation()}
       >

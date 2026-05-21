@@ -103,7 +103,7 @@ const FEATURES = [
   {
     emoji: "🎧",
     title: "Husary, Afasy, Sudais",
-    body: "5 ta mashhur qori — yoqimli ovozda har bir oyatni eshiting va o'rganing.",
+    body: "8 ta mashhur qori — yoqimli ovozda har bir oyatni eshiting va o'rganing.",
   },
   {
     emoji: "🖼",

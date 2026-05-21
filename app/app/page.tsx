@@ -90,14 +90,14 @@ export default function Dashboard() {
               Bugungi limit
             </p>
             <p className="text-sm font-semibold">
-              {quota.used_today} / {quota.limit ?? 5}
+              {quota.used_today} / {quota.limit ?? 7}
             </p>
           </div>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-amber-200/40 dark:bg-amber-900/40">
             <div
               className="h-full rounded-full bg-amber-500 transition-all"
               style={{
-                width: `${Math.min(100, ((quota.used_today || 0) / (quota.limit || 5)) * 100)}%`,
+                width: `${Math.min(100, ((quota.used_today || 0) / (quota.limit || 7)) * 100)}%`,
               }}
             />
           </div>
