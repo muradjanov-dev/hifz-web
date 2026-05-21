@@ -539,6 +539,7 @@ function StoryReveal({ valley, onClose }: { valley: Valley; onClose: () => void 
 
 function AyahCard({ ayah, singleStage }: { ayah: AyahPayload; singleStage: boolean }) {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [zoom, setZoom] = useState(false);
 
   useEffect(() => {
     if (ayah.audio_url && audioRef.current) {
@@ -594,12 +595,7 @@ function AyahCard({ ayah, singleStage }: { ayah: AyahPayload; singleStage: boole
           <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
             📖 Mushaf rasmida ko&apos;rish
           </summary>
-          <a
-            href={ayah.image_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block bg-white p-3"
-          >
+          <button type="button" onClick={() => setZoom(true)} className="block w-full bg-white p-3">
             <img
               src={ayah.image_url}
               alt={`${ayah.surah}:${ayah.ayah}`}
@@ -609,8 +605,34 @@ function AyahCard({ ayah, singleStage }: { ayah: AyahPayload; singleStage: boole
             <span className="mt-2 block text-center text-[11px] text-zinc-400">
               Kattalashtirish uchun bosing
             </span>
-          </a>
+          </button>
         </details>
+      )}
+
+      {/* Fullscreen zoom (Telegram webview blocks new tabs, so use an in-app lightbox) */}
+      {zoom && (
+        <div
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+          onClick={() => setZoom(false)}
+        >
+          <div
+            className="relative max-h-[90vh] w-full max-w-2xl overflow-auto rounded-xl bg-white p-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={ayah.image_url}
+              alt={`${ayah.surah}:${ayah.ayah}`}
+              className="mx-auto block w-full"
+            />
+          </div>
+          <button
+            onClick={() => setZoom(false)}
+            aria-label="Yopish"
+            className="absolute right-4 top-4 flex size-10 items-center justify-center rounded-full bg-white/90 text-zinc-800 shadow-lg"
+          >
+            ✕
+          </button>
+        </div>
       )}
     </div>
   );
