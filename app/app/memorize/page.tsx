@@ -455,7 +455,12 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
       {/* Ayahs list */}
       <div className="space-y-3 mb-4">
         {ayahs.map((a) => (
-          <AyahCard key={`${a.surah}_${a.ayah}`} ayah={a} singleStage={stage === "ayah"} />
+          <AyahCard
+            key={`${a.surah}_${a.ayah}`}
+            ayah={a}
+            singleStage={stage === "ayah"}
+            pageNonce={done}
+          />
         ))}
       </div>
 
@@ -590,7 +595,7 @@ function StoryReveal({ valley, onClose }: { valley: Valley; onClose: () => void 
 // Single Ayah Card (Arabic, audio, translation, optional image)
 // ──────────────────────────────────────────────────────────────────────────────
 
-function AyahCard({ ayah, singleStage }: { ayah: AyahPayload; singleStage: boolean }) {
+function AyahCard({ ayah, singleStage, pageNonce = 0 }: { ayah: AyahPayload; singleStage: boolean; pageNonce?: number }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [zoom, setZoom] = useState(false);
 
@@ -603,8 +608,12 @@ function AyahCard({ ayah, singleStage }: { ayah: AyahPayload; singleStage: boole
 
   return (
     <div className="overflow-hidden rounded-2xl border border-emerald-200/60 bg-gradient-to-br from-emerald-50 to-white shadow-sm dark:border-emerald-900/40 dark:from-emerald-950/30 dark:to-zinc-900">
-      {/* Arabic */}
-      <div className="px-5 pt-5 pb-3">
+      {/* Arabic — animated on each rep tap so it feels like turning a varaq */}
+      <div
+        key={pageNonce}
+        className="px-5 pt-5 pb-3"
+        style={{ animation: "hifz-page-turn 0.45s ease-out" }}
+      >
         <p
           dir="rtl"
           lang="ar"
@@ -619,7 +628,7 @@ function AyahCard({ ayah, singleStage }: { ayah: AyahPayload; singleStage: boole
           {ayah.arabic}
         </p>
         <p className="mt-2 text-center text-[11px] text-emerald-700/70 dark:text-emerald-300/70">
-          {ayah.surah}:{ayah.ayah}
+          {ayah.surah}:{ayah.ayah} · Varaq {Math.min(pageNonce + 1, 99)}
         </p>
       </div>
 
@@ -642,41 +651,70 @@ function AyahCard({ ayah, singleStage }: { ayah: AyahPayload; singleStage: boole
         </div>
       )}
 
-      {/* Mushaf image (single-stage only) — open by default, large & clear */}
+      {/* Mushaf view — styled Arabic text on a parchment-look card (the CDN
+          ayah images were tiny/unreliable, so we render directly with the
+          Amiri Quran font we already load). */}
       {singleStage && (
         <details className="border-t border-emerald-200/40 dark:border-emerald-900/30">
           <summary className="cursor-pointer px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            📖 Mushaf rasmida ko&apos;rish
+            📖 Mushaf ko&apos;rinishida
           </summary>
-          <button type="button" onClick={() => setZoom(true)} className="block w-full bg-white p-3">
-            <img
-              src={ayah.image_url}
-              alt={`${ayah.surah}:${ayah.ayah}`}
-              className="mx-auto block w-full max-w-full rounded-lg"
-              style={{ minHeight: "120px" }}
-            />
-            <span className="mt-2 block text-center text-[11px] text-zinc-400">
+          <button
+            type="button"
+            onClick={() => setZoom(true)}
+            className="block w-full bg-[#fbf5e6] px-5 py-7 text-center transition active:scale-[0.995] dark:bg-[#1c1810]"
+          >
+            <p
+              dir="rtl"
+              lang="ar"
+              className="text-[#2a1e10] dark:text-[#f1e3c4]"
+              style={{
+                fontSize: "3rem",
+                lineHeight: "2.1",
+                fontFamily:
+                  'var(--font-amiri), "Amiri Quran", "Amiri", "Scheherazade New", "Traditional Arabic", serif',
+              }}
+            >
+              {ayah.arabic}
+            </p>
+            <p className="mt-4 text-xs text-amber-800/70 dark:text-amber-200/60">
+              {ayah.surah}:{ayah.ayah}
+            </p>
+            <span className="mt-2 block text-[11px] text-zinc-500 dark:text-zinc-500">
               Kattalashtirish uchun bosing
             </span>
           </button>
         </details>
       )}
 
-      {/* Fullscreen zoom (Telegram webview blocks new tabs, so use an in-app lightbox) */}
+      {/* Fullscreen mushaf view (Telegram webview blocks new tabs, so we use
+          an in-app lightbox). Renders the same Arabic text bigger. */}
       {zoom && (
         <div
-          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm"
           onClick={() => setZoom(false)}
         >
           <div
-            className="relative max-h-[90vh] w-full max-w-2xl overflow-auto rounded-xl bg-white p-3"
+            className="relative max-h-[90vh] w-full max-w-2xl overflow-auto rounded-xl bg-[#fbf5e6] p-8 shadow-2xl dark:bg-[#1c1810]"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={ayah.image_url}
-              alt={`${ayah.surah}:${ayah.ayah}`}
-              className="mx-auto block w-full"
-            />
+            <p
+              dir="rtl"
+              lang="ar"
+              className="text-[#2a1e10] dark:text-[#f1e3c4]"
+              style={{
+                fontSize: "clamp(2.5rem, 7vw, 4.5rem)",
+                lineHeight: "2.1",
+                textAlign: "center",
+                fontFamily:
+                  'var(--font-amiri), "Amiri Quran", "Amiri", "Scheherazade New", "Traditional Arabic", serif',
+              }}
+            >
+              {ayah.arabic}
+            </p>
+            <p className="mt-6 text-center text-sm text-amber-800/70 dark:text-amber-200/60">
+              {ayah.surah}:{ayah.ayah}
+            </p>
           </div>
           <button
             onClick={() => setZoom(false)}

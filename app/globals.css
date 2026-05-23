@@ -46,3 +46,11 @@ body {
   0%   { transform: translateY(100%); opacity: 0.6; }
   100% { transform: translateY(0); opacity: 1; }
 }
+
+/* Page-turn: each rep tap "turns a varaq" — the ayah text slides in from the
+   right with a slight scale, so the user feels they're on a new page. The
+   audio element sits outside this so it does NOT restart. */
+@keyframes hifz-page-turn {
+  0%   { transform: translateX(48px) scale(0.96); opacity: 0; }
+  100% { transform: translateX(0) scale(1); opacity: 1; }
+}
