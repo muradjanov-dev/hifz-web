@@ -628,7 +628,7 @@ function AyahCard({ ayah, singleStage, pageNonce = 0 }: { ayah: AyahPayload; sin
           {ayah.arabic}
         </p>
         <p className="mt-2 text-center text-[11px] text-emerald-700/70 dark:text-emerald-300/70">
-          {ayah.surah}:{ayah.ayah} · Varaq {Math.min(pageNonce + 1, 99)}
+          {ayah.surah}:{ayah.ayah} · Takror {Math.min(pageNonce + 1, 99)}
         </p>
       </div>
 
