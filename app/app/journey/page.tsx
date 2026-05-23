@@ -122,33 +122,67 @@ function RegionRoadmap({
     v,
     st: valleyStatus(v, total),
   }));
-  const pathD = pts.map((p, i) => `${i ? "L" : "M"} ${p.x} ${p.y}`).join(" ");
-  const regionDone = valleys.every((v) => valleyStatus(v, total) === "completed");
-  const regionLocked = valleys.every((v) => valleyStatus(v, total) === "locked");
+
+  // Build two smooth (cubic-Bezier) paths so completed segments can render in
+  // solid emerald and ahead segments in dashed teal — clearer progress signal.
+  const doneSegs: string[] = [];
+  const aheadSegs: string[] = [];
+  for (let i = 1; i < pts.length; i++) {
+    const p0 = pts[i - 1];
+    const p1 = pts[i];
+    const midY = (p0.y + p1.y) / 2;
+    const seg = `M ${p0.x} ${p0.y} C ${p0.x} ${midY} ${p1.x} ${midY} ${p1.x} ${p1.y}`;
+    if (p1.st === "completed") doneSegs.push(seg);
+    else aheadSegs.push(seg);
+  }
+
+  const doneCount = pts.filter((p) => p.st === "completed").length;
+  const regionDone = doneCount === pts.length;
+  const regionLocked = pts.every((p) => p.st === "locked");
 
   return (
     <section>
       {/* Region banner */}
-      <div className="sticky top-0 z-10 -mx-4 flex items-center gap-2 bg-zinc-50/90 px-4 py-2 backdrop-blur dark:bg-zinc-950/90">
+      <div
+        className={cn(
+          "sticky top-0 z-10 -mx-4 flex items-center gap-3 px-4 py-2.5 backdrop-blur",
+          regionDone
+            ? "bg-emerald-50/90 dark:bg-emerald-950/40"
+            : regionLocked
+            ? "bg-zinc-100/90 dark:bg-zinc-900/90"
+            : "bg-gradient-to-r from-teal-50/95 to-emerald-50/95 dark:from-teal-950/40 dark:to-emerald-950/40"
+        )}
+      >
         <span
           className={cn(
-            "flex size-7 shrink-0 items-center justify-center rounded-lg text-xs font-bold",
+            "flex size-8 shrink-0 items-center justify-center rounded-xl text-sm font-bold shadow-sm",
             regionDone
               ? "bg-emerald-500 text-white"
               : regionLocked
               ? "bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-500"
-              : "bg-teal-700 text-white"
+              : "bg-gradient-to-br from-teal-600 to-emerald-700 text-white"
           )}
         >
           {regionDone ? "✓" : juz}
         </span>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-semibold">
-            {juz}-pora · {JUZ_NAMES[juz - 1]}
-          </p>
-          <p className="text-[10px] text-zinc-500 dark:text-zinc-400">
-            {valleys[0].id}–{valleys[valleys.length - 1].id}-vodiylar
-          </p>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="truncate text-sm font-semibold">
+              {juz}-pora · {JUZ_NAMES[juz - 1]}
+            </p>
+            <span className="shrink-0 text-[11px] tabular-nums text-zinc-500 dark:text-zinc-400">
+              {doneCount}/{pts.length}
+            </span>
+          </div>
+          <div className="mt-1 h-1 overflow-hidden rounded-full bg-zinc-200/70 dark:bg-zinc-800/70">
+            <div
+              className={cn(
+                "h-full rounded-full transition-all",
+                regionDone ? "bg-emerald-500" : "bg-gradient-to-r from-teal-500 to-emerald-500"
+              )}
+              style={{ width: `${(doneCount / pts.length) * 100}%` }}
+            />
+          </div>
         </div>
       </div>
 
@@ -162,15 +196,29 @@ function RegionRoadmap({
           preserveAspectRatio="none"
           aria-hidden
         >
-          <path
-            d={pathD}
-            fill="none"
-            stroke={regionLocked ? "rgb(212 212 216 / 0.6)" : "rgb(13 148 136 / 0.45)"}
-            strokeWidth={4}
-            strokeDasharray="1 6"
-            strokeLinecap="round"
-            vectorEffect="non-scaling-stroke"
-          />
+          {/* Ahead (dashed muted) — drawn first so completed paints on top */}
+          {aheadSegs.length > 0 && (
+            <path
+              d={aheadSegs.join(" ")}
+              fill="none"
+              stroke="rgb(148 163 184 / 0.55)"
+              strokeWidth={3}
+              strokeDasharray="2 7"
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          )}
+          {/* Completed (solid emerald gradient) */}
+          {doneSegs.length > 0 && (
+            <path
+              d={doneSegs.join(" ")}
+              fill="none"
+              stroke="rgb(16 185 129 / 0.85)"
+              strokeWidth={4}
+              strokeLinecap="round"
+              vectorEffect="non-scaling-stroke"
+            />
+          )}
         </svg>
 
         {pts.map(({ x, y, v, st }) => (
@@ -197,6 +245,9 @@ function RoadNode({
   const isCurrent = status === "current";
   const isDone = status === "completed";
   const label = valley.hasStory || isCurrent ? valley.name : null;
+  // Size 64/56/48 — use text-base for 3-digit ids so they fit cleanly.
+  const idText = String(valley.id);
+  const idClass = idText.length >= 3 ? "text-base" : "text-lg";
 
   return (
     <button
@@ -205,33 +256,55 @@ function RoadNode({
       className="absolute -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
     >
       {isCurrent && (
-        <span className="mb-1 whitespace-nowrap rounded-full bg-teal-700 px-2 py-0.5 text-[10px] font-semibold text-white shadow">
-          Siz shu yerda
+        <span className="mb-1 whitespace-nowrap rounded-full bg-gradient-to-r from-teal-600 to-emerald-700 px-2.5 py-0.5 text-[10px] font-semibold text-white shadow-md">
+          📍 Siz shu yerda
         </span>
       )}
-      <span
-        className={cn(
-          "flex items-center justify-center rounded-full font-bold shadow-md transition active:scale-95",
-          isCurrent
-            ? "size-16 bg-gradient-to-br from-teal-500 to-emerald-700 text-white ring-4 ring-teal-300/50 dark:ring-teal-500/40"
-            : isDone
-            ? "size-14 bg-gradient-to-br from-emerald-400 to-emerald-600 text-white"
-            : "size-12 bg-zinc-200 text-zinc-400 dark:bg-zinc-800 dark:text-zinc-600"
+      <span className="relative inline-flex items-center justify-center">
+        {/* Animated pulse rings on the current node — radar ping effect */}
+        {isCurrent && (
+          <>
+            <span className="absolute inline-flex size-20 rounded-full bg-teal-400/40 opacity-75 animate-ping" />
+            <span className="absolute inline-flex size-16 rounded-full bg-teal-400/15" />
+          </>
         )}
-      >
-        {isDone ? (
-          <span className="text-xl">✓</span>
-        ) : status === "locked" ? (
-          <LockGlyph />
-        ) : (
-          <span className="text-lg">{valley.id}</span>
+        <span
+          className={cn(
+            "relative flex items-center justify-center rounded-full font-bold transition active:scale-95",
+            isCurrent
+              ? "size-16 bg-gradient-to-br from-teal-500 via-teal-600 to-emerald-700 text-white shadow-lg shadow-emerald-600/40 ring-4 ring-white dark:ring-zinc-950"
+              : isDone
+              ? "size-14 bg-gradient-to-br from-emerald-400 to-emerald-600 text-white shadow-md shadow-emerald-500/30 ring-2 ring-white dark:ring-zinc-950"
+              : "size-12 bg-gradient-to-br from-zinc-100 to-zinc-200 text-zinc-400 shadow-inner ring-2 ring-white dark:from-zinc-800 dark:to-zinc-900 dark:text-zinc-600 dark:ring-zinc-950"
+          )}
+        >
+          {isDone ? (
+            <span className="text-2xl drop-shadow-sm">✓</span>
+          ) : status === "locked" ? (
+            <LockGlyph />
+          ) : (
+            <span className={cn("font-bold drop-shadow-sm", idClass)}>{valley.id}</span>
+          )}
+        </span>
+        {/* Story-available indicator */}
+        {valley.hasStory && !isCurrent && (
+          <span
+            className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full bg-amber-400 text-[10px] shadow ring-1 ring-white dark:ring-zinc-950"
+            title="Hikoyali vodiy"
+          >
+            📖
+          </span>
         )}
       </span>
       {label && (
         <span
           className={cn(
-            "mt-1 max-w-[88px] truncate text-[10px] font-medium",
-            isCurrent ? "text-teal-700 dark:text-teal-400" : "text-zinc-600 dark:text-zinc-400"
+            "mt-1.5 max-w-[100px] truncate text-[10px] font-medium",
+            isCurrent
+              ? "text-teal-700 dark:text-teal-300"
+              : isDone
+              ? "text-emerald-700 dark:text-emerald-400"
+              : "text-zinc-600 dark:text-zinc-400"
           )}
         >
           {valley.name}
