@@ -253,7 +253,23 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
   const session     = state.session!;
   const stage       = state.stage ?? "ayah";
   const stageLabel  = state.stage_label ?? "Yodlash";
-  const target      = state.target_reps ?? 0;
+  // Rep count — defaults to 11; users can pick any preset.
+  const [customReps, setCustomReps] = useState<number>(11);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const v = localStorage.getItem("hifz_custom_reps");
+    if (v && /^\d+$/.test(v)) {
+      const n = parseInt(v, 10);
+      if (n > 0) setCustomReps(n);
+    }
+  }, []);
+  function pickReps(n: number) {
+    setCustomReps(n);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("hifz_custom_reps", String(n));
+    }
+  }
+  const target = customReps;
   const ayahs       = state.ayahs ?? [];
   const progress    = state.progress;
 
@@ -416,6 +432,30 @@ function ActiveSession({ state, onChange }: { state: StagePayload; onChange: () 
         <span className="text-emerald-700 dark:text-emerald-300">
           {target} marta takror
         </span>
+      </div>
+
+      {/* User-set rep count (overrides the length-based default). */}
+      <div className="mb-3">
+        <p className="mb-1.5 text-[11px] text-zinc-500 dark:text-zinc-400">🔁 Takror soni</p>
+        <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1">
+          {([3, 5, 7, 9, 11, 15, 20] as const).map((n) => {
+            const active = customReps === n;
+            return (
+              <button
+                key={n}
+                onClick={() => pickReps(n)}
+                className={cn(
+                  "shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition",
+                  active
+                    ? "border-emerald-600 bg-emerald-600 text-white"
+                    : "border-zinc-200 hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800"
+                )}
+              >
+                {n}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Reciter switcher */}
